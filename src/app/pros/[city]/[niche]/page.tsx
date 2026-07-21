@@ -86,7 +86,7 @@ export default async function ProDirectoryPage({ params }: Props) {
           {/* ═══════════════════════════════════════════════════════════════
                FUTURE DATABASE INTEGRATION
                This template will be connected to a database of vetted pros.
-               Query: SELECT * FROM pros WHERE city = '${city}' AND niche = '${niche}'
+               Query: SELECT * FROM pros WHERE city = city AND niche = niche
                Each pro will be rendered as a ProCard component.
                ═══════════════════════════════════════════════════════════════ */}
           <div className="space-y-6">
