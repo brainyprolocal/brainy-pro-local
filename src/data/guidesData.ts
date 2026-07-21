@@ -1,9 +1,9 @@
 export interface GuideSection {
   heading: string;      // H2 heading
-  content: string;      // paragraph content (3-5 sentences, rich with local references)
+  content: string | string[];      // paragraph content (3-5 sentences, rich with local references)
   subSections?: {       // H3 sub-headings
     heading: string;
-    content: string;
+    content: string | string[];
   }[];
 }
 
