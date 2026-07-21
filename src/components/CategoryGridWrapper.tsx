@@ -3,12 +3,7 @@
 import { useState } from 'react';
 import CategoryCard from './CategoryCard';
 import WaitlistModal from './WaitlistModal';
-
-interface Category {
-  id: string;
-  name: string;
-  iconPath: string;
-}
+import { Category } from '@/data/categoriesData';
 
 interface Props {
   categories: Category[];
@@ -29,7 +24,13 @@ export default function CategoryGridWrapper({ categories }: Props) {
         {categories.slice(0, 8).map((category) => (
           <CategoryCard 
             key={category.id} 
-            category={category} 
+            name={category.name}
+            description={category.description}
+            icon={
+              <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                <path d={category.icon} />
+              </svg>
+            }
             onClick={() => handleCategoryClick(category)} 
           />
         ))}
@@ -37,7 +38,7 @@ export default function CategoryGridWrapper({ categories }: Props) {
       <WaitlistModal 
         isOpen={showWaitlist} 
         onClose={() => setShowWaitlist(false)} 
-        categoryName={selectedCategory?.name} 
+        category={selectedCategory?.name || 'Home Service'} 
       />
     </>
   );

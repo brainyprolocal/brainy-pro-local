@@ -9,7 +9,7 @@ export default function HeroSearchWrapper() {
   const [searchService, setSearchService] = useState('');
   const [searchCity, setSearchCity] = useState('');
 
-  const handleSearch = (service: string, city: string) => {
+  const handleSearch = ({ service, city }: { service: string; city: string }) => {
     setSearchService(service);
     setSearchCity(city);
     setShowModal(true);
