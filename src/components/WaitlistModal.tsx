@@ -29,7 +29,7 @@ export default function WaitlistModal({ isOpen, onClose, category }: WaitlistMod
           </h2>
           
           <p className="text-gray-600 mb-8 leading-relaxed">
-            We're building the most trusted network of {category} professionals in Central Maryland. Be the first to know when we launch!
+            We&apos;re building the most trusted network of {category} professionals in Central Maryland. Be the first to know when we launch!
           </p>
 
           <form className="flex flex-col gap-3 max-w-sm mx-auto mb-6" onSubmit={(e) => e.preventDefault()}>

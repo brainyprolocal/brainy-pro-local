@@ -71,7 +71,7 @@ export default async function ProDirectoryPage({ params }: Props) {
           {/* SearchBar Component Placeholder */}
           <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-2xl font-bold font-montserrat text-trust-navy mb-4">
-              Can't wait? Find pros in other areas
+              Can&apos;t wait? Find pros in other areas
             </h2>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
               <Link

@@ -164,7 +164,7 @@ export default function HomePage() {
             Are You a Home Service Pro?
           </h2>
           <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-            Join Central Maryland's most trusted contractor network. Get exclusive leads, CRM tools, and more.
+            Join Central Maryland&apos;s most trusted contractor network. Get exclusive leads, CRM tools, and more.
           </p>
           <Link 
             href="/for-pros" 

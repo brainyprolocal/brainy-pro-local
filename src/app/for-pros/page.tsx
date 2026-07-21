@@ -143,7 +143,7 @@ export default function ForProsPage() {
           <div className="text-center mb-16">
             <h2 className="font-montserrat text-3xl sm:text-4xl font-bold text-trust-navy mb-4">Your Digital Backend, Installed</h2>
             <p className="font-inter text-xl text-gray-600 max-w-3xl mx-auto font-medium">
-              These aren't marketing tricks. These are operational systems that buy back your time.
+              These aren&apos;t marketing tricks. These are operational systems that buy back your time.
             </p>
           </div>
 
@@ -203,7 +203,7 @@ export default function ForProsPage() {
                   <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                 ))}
               </div>
-              <p className="font-inter text-gray-300 mb-4 text-sm">"The automated review system alone has doubled our organic leads. It's like having an admin working 24/7."</p>
+              <p className="font-inter text-gray-300 mb-4 text-sm">&quot;The automated review system alone has doubled our organic leads. It&apos;s like having an admin working 24/7.&quot;</p>
               <div className="font-montserrat font-semibold text-white">Mike R.</div>
               <div className="font-inter text-action-accent text-xs">HVAC Contractor</div>
             </div>
@@ -214,7 +214,7 @@ export default function ForProsPage() {
                   <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                 ))}
               </div>
-              <p className="font-inter text-gray-300 mb-4 text-sm">"Finally, a CRM that doesn't feel like rocket science. Managing our leads has never been easier."</p>
+              <p className="font-inter text-gray-300 mb-4 text-sm">&quot;Finally, a CRM that doesn&apos;t feel like rocket science. Managing our leads has never been easier.&quot;</p>
               <div className="font-montserrat font-semibold text-white">Sarah T.</div>
               <div className="font-inter text-action-accent text-xs">Plumbing Services</div>
             </div>
@@ -225,7 +225,7 @@ export default function ForProsPage() {
                   <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                 ))}
               </div>
-              <p className="font-inter text-gray-300 mb-4 text-sm">"Reactivating our old customers brought in a wave of jobs during our slow season. Invaluable."</p>
+              <p className="font-inter text-gray-300 mb-4 text-sm">&quot;Reactivating our old customers brought in a wave of jobs during our slow season. Invaluable.&quot;</p>
               <div className="font-montserrat font-semibold text-white">David L.</div>
               <div className="font-inter text-action-accent text-xs">Roofing Specialists</div>
             </div>
