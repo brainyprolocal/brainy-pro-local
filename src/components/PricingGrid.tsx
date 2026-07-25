@@ -77,6 +77,7 @@ const tiers: Tier[] = [
 export default function PricingGrid() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTier, setSelectedTier] = useState<string>('');
+  const [highlightedTier, setHighlightedTier] = useState<string>('The Growth Engine');
 
   const openModal = (tierValue: string) => {
     setSelectedTier(tierValue);
@@ -87,15 +88,16 @@ export default function PricingGrid() {
     <>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-0 max-w-6xl mx-auto items-stretch">
         {tiers.map((tier, index) => {
-          const isHighlighted = tier.highlighted;
+          const isHighlighted = tier.name === highlightedTier;
           const isFirst = index === 0;
           const isLast = index === tiers.length - 1;
 
           return (
             <div
               key={tier.name}
+              onClick={() => setHighlightedTier(tier.name)}
               className={`
-                relative flex flex-col
+                relative flex flex-col cursor-pointer
                 ${isHighlighted
                   ? 'bg-white border-2 border-action-accent shadow-2xl rounded-2xl lg:rounded-2xl z-10 lg:scale-[1.05]'
                   : `bg-white border border-gray-200 shadow-md
@@ -163,7 +165,10 @@ export default function PricingGrid() {
 
                 {/* CTA Button */}
                 <button
-                  onClick={() => openModal(tier.tierValue)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openModal(tier.tierValue);
+                  }}
                   className={`
                     w-full py-3.5 rounded-xl font-semibold font-montserrat text-sm tracking-wide
                     transition-all duration-300 transform hover:-translate-y-0.5 shadow-md hover:shadow-lg
