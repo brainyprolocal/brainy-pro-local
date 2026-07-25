@@ -116,7 +116,7 @@ export default function HomePage() {
             <div className="text-xs font-inter text-gray-400 uppercase tracking-wider">Years in the Trades</div>
           </div>
           <div>
-            <div className="text-3xl font-bold font-outfit text-action-accent mb-1">500+</div>
+            <div className="text-3xl font-bold font-outfit text-action-accent mb-1">100+</div>
             <div className="text-xs font-inter text-gray-400 uppercase tracking-wider">Pros in Network</div>
           </div>
           <div>

@@ -40,6 +40,7 @@ const tiers: Tier[] = [
     setupNote: '+$100 one-time setup fee',
     description: 'The operational backbone your business has been missing.',
     features: [
+      'Everything in The Network, plus:',
       'Database Reactivation — Unlock hidden revenue from past clients.',
       'Automated Review Capture — Skyrocket your local Google rankings.',
       'Annual Marketing Calendar Jam Session.',
@@ -55,6 +56,7 @@ const tiers: Tier[] = [
     setupNote: '+$100 one-time setup fee',
     description: 'The full-stack digital backend — everything, automated.',
     features: [
+      'Everything in The Growth Engine, plus:',
       'Missed-Call Text-Back Automation.',
       'Automated Email & Text Follow-up Sequences.',
       'Automated Multi-App Social Media Posting.',
