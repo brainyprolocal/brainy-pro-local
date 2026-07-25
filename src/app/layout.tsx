@@ -26,9 +26,9 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://brainyprolocal.com'),
   title: {
     template: '%s | brAIny pro',
-    default: 'brAIny pro | Find Trusted Home Service Pros in Central Maryland',
+    default: 'brAIny pro | The Operational Platform for Maryland Home Service Pros',
   },
-  description: 'brAIny pro connects Central Maryland homeowners with vetted, trusted local home service professionals. Plumbers, electricians, HVAC, and more in Laurel, Columbia, Ellicott City, and Howard County.',
+  description: 'Build trust. Buy back time. Keep your clients for life. The all-in-one operational platform and networking hub for Maryland\'s top home service professionals.',
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     siteName: 'brAIny pro',
     images: [
       {
-        url: '/og-image.jpg', // Placeholder for OG image
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'brAIny pro',
+        alt: 'brAIny pro — The Operational Platform for Maryland Home Service Pros',
       },
     ],
   },
@@ -53,7 +53,7 @@ const jsonLd = {
       "@id": "https://brainyprolocal.com/#website",
       "url": "https://brainyprolocal.com/",
       "name": "brAIny pro",
-      "description": "Find Trusted Home Service Pros in Central Maryland",
+      "description": "The all-in-one operational platform for Maryland home service professionals.",
       "publisher": {
         "@id": "https://brainyprolocal.com/#organization"
       }
@@ -66,7 +66,8 @@ const jsonLd = {
       "logo": {
         "@type": "ImageObject",
         "url": "https://brainyprolocal.com/logo.png"
-      }
+      },
+      "slogan": "Build trust. Buy back time. Keep your clients for life."
     }
   ]
 };

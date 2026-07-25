@@ -1,10 +1,8 @@
-import Link from 'next/link';
-
 export default function Footer() {
   return (
     <footer className="bg-trust-navy text-gray-300 pt-16 pb-8 border-t-[4px] border-t-connection-blue">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand Column */}
           <div className="space-y-4">
             <span className="font-[family-name:var(--font-outfit)] text-3xl font-bold text-clean-white">
@@ -14,29 +12,8 @@ export default function Footer() {
               Build trust. Buy back time. Keep your clients for life.
             </p>
             <p className="text-sm leading-relaxed text-gray-400">
-              brAIny pro connects Central Maryland homeowners with vetted, trusted local home service professionals to make finding help stress-free and reliable.
+              The all-in-one operational platform and networking hub for Maryland&apos;s top home service professionals.
             </p>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-clean-white font-semibold text-lg mb-4 font-[family-name:var(--font-montserrat)]">
-              Quick Links
-            </h3>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/" className="hover:text-action-accent transition-colors duration-200">Home</Link>
-              </li>
-              <li>
-                <Link href="/find-a-pro" className="hover:text-action-accent transition-colors duration-200">Find a Pro</Link>
-              </li>
-              <li>
-                <Link href="/guides" className="hover:text-action-accent transition-colors duration-200">Local Guides</Link>
-              </li>
-              <li>
-                <Link href="/for-pros" className="hover:text-action-accent transition-colors duration-200">For Pros</Link>
-              </li>
-            </ul>
           </div>
 
           {/* Service Areas */}
@@ -75,7 +52,6 @@ export default function Footer() {
               </li>
             </ul>
             <div className="flex space-x-4">
-              {/* Social Placeholders */}
               <a href="#" className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-action-accent transition-colors" aria-label="Facebook">
                 <span className="text-xs text-white">FB</span>
               </a>
@@ -91,7 +67,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-gray-800 text-sm text-center text-gray-500 flex flex-col md:flex-row justify-between items-center">
-          <p>© {new Date().getFullYear()} brAIny pro. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} brAIny pro. All rights reserved.</p>
           <p className="mt-2 md:mt-0">Built with 20+ years of home service experience.</p>
         </div>
       </div>

@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,11 +15,11 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Local Guides', href: '/guides' },
-    { name: 'For Pros', href: '/for-pros' },
-  ];
+  const scrollToPricing = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <header
@@ -40,32 +38,24 @@ export default function Header() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`font-medium transition-colors ${
-                    isActive
-                      ? 'text-action-accent'
-                      : 'text-trust-navy hover:text-connection-blue'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              );
-            })}
+            <a
+              href="#pricing"
+              onClick={scrollToPricing}
+              className="font-medium text-trust-navy hover:text-action-accent transition-colors cursor-pointer"
+            >
+              Pricing
+            </a>
           </nav>
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Link
-              href="/for-pros"
-              className="inline-flex items-center justify-center px-6 py-2.5 bg-action-accent text-clean-white font-semibold rounded-full shadow-lg hover:bg-connection-blue hover:scale-105 transition-all duration-300 hover:shadow-xl"
+            <a
+              href="#pricing"
+              onClick={scrollToPricing}
+              className="inline-flex items-center justify-center px-6 py-2.5 bg-action-accent text-clean-white font-semibold rounded-full shadow-lg hover:bg-connection-blue hover:scale-105 transition-all duration-300 hover:shadow-xl cursor-pointer"
             >
-              Are You a Pro? Join the Network
-            </Link>
+              View Platform Pricing
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -97,25 +87,20 @@ export default function Header() {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 glass shadow-lg animate-slide-down border-t border-gray-100">
           <div className="flex flex-col px-4 py-6 space-y-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`text-lg font-medium py-2 ${
-                  pathname === link.href ? 'text-action-accent' : 'text-trust-navy'
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
-            <Link
-              href="/for-pros"
-              className="inline-block mt-4 text-center px-6 py-3 bg-action-accent text-clean-white font-semibold rounded-full shadow-md"
-              onClick={() => setIsMobileMenuOpen(false)}
+            <a
+              href="#pricing"
+              onClick={scrollToPricing}
+              className="text-lg font-medium py-2 text-trust-navy hover:text-action-accent transition-colors"
             >
-              Are You a Pro? Join the Network
-            </Link>
+              Pricing
+            </a>
+            <a
+              href="#pricing"
+              onClick={scrollToPricing}
+              className="inline-block mt-4 text-center px-6 py-3 bg-action-accent text-clean-white font-semibold rounded-full shadow-md"
+            >
+              View Platform Pricing
+            </a>
           </div>
         </div>
       )}
