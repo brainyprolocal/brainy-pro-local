@@ -111,7 +111,7 @@ export default function HomePage() {
        * ═══════════════════════════════════════════ */}
       <section className="bg-slate-900 text-clean-white py-4 px-4 border-b border-white/5 flex justify-center items-center">
         <div className="flex items-center gap-3 font-inter text-sm md:text-base font-semibold tracking-wider uppercase opacity-80">
-          <span className="text-action-accent whitespace-nowrap">Built for:</span>
+          <span className="text-blue-400 whitespace-nowrap">Built for:</span>
           <div className="h-6 overflow-hidden relative w-48 text-left">
             <div className="flex flex-col animate-vertical-marquee text-white absolute top-0 left-0 w-full">
               {/* Original List */}
@@ -198,7 +198,7 @@ export default function HomePage() {
                       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                     </div>
                     <div>
-                      <h4 className="font-outfit font-bold text-trust-navy text-lg mb-1">True Partnership</h4>
+                      <h3 className="font-outfit font-bold text-trust-navy text-lg mb-1">True Partnership</h3>
                       <p className="font-inter text-gray-600 text-sm">We succeed when your business grows, not when you just click an ad.</p>
                     </div>
                   </li>
@@ -207,7 +207,7 @@ export default function HomePage() {
                       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
                     </div>
                     <div>
-                      <h4 className="font-outfit font-bold text-trust-navy text-lg mb-1">Building Trust</h4>
+                      <h3 className="font-outfit font-bold text-trust-navy text-lg mb-1">Building Trust</h3>
                       <p className="font-inter text-gray-600 text-sm">Automated systems that turn one-time clients into lifelong advocates.</p>
                     </div>
                   </li>
@@ -216,7 +216,7 @@ export default function HomePage() {
                       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
                     <div>
-                      <h4 className="font-outfit font-bold text-trust-navy text-lg mb-1">Buying Back Time</h4>
+                      <h3 className="font-outfit font-bold text-trust-navy text-lg mb-1">Buying Back Time</h3>
                       <p className="font-inter text-gray-600 text-sm">Stop doing manual follow-ups at 9 PM. Let the software do the heavy lifting.</p>
                     </div>
                   </li>

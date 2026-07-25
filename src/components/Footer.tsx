@@ -53,13 +53,13 @@ export default function Footer() {
             </ul>
             <div className="flex space-x-4">
               <a href="#" className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-action-accent transition-colors" aria-label="Facebook">
-                <span className="text-xs text-white">FB</span>
+                <span className="text-xs text-white" aria-hidden="true">FB</span>
               </a>
               <a href="#" className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-action-accent transition-colors" aria-label="Twitter">
-                <span className="text-xs text-white">TW</span>
+                <span className="text-xs text-white" aria-hidden="true">TW</span>
               </a>
               <a href="#" className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-action-accent transition-colors" aria-label="Instagram">
-                <span className="text-xs text-white">IG</span>
+                <span className="text-xs text-white" aria-hidden="true">IG</span>
               </a>
             </div>
           </div>
