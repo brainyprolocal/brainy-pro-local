@@ -68,6 +68,7 @@ const tiers: Tier[] = [
       'Form & Survey Builder.',
       'Call Tracking & Recording.',
       'Desktop and Mobile CRM App.',
+      'Job Bidding Software.',
     ],
     cta: 'Get Custom Quote',
     tierValue: 'Custom Ultimate Tier',
