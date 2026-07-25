@@ -107,22 +107,41 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-       *  1.5. TRADES BAR
+       *  1.5. TRADES BAR (Vertical Ticker)
        * ═══════════════════════════════════════════ */}
-      <section className="bg-slate-900 text-clean-white py-4 px-4 border-b border-white/5">
-        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-inter text-sm md:text-base font-semibold tracking-wider uppercase opacity-80">
-          <span className="text-action-accent">Built for:</span>
-          <span>Plumbers</span>
-          <span className="text-gray-600 hidden sm:inline">•</span>
-          <span>Electricians</span>
-          <span className="text-gray-600 hidden sm:inline">•</span>
-          <span>HVAC</span>
-          <span className="text-gray-600 hidden sm:inline">•</span>
-          <span>Roofers</span>
-          <span className="text-gray-600 hidden sm:inline">•</span>
-          <span>Landscapers</span>
-          <span className="text-gray-600 hidden sm:inline">•</span>
-          <span>Cleaners</span>
+      <section className="bg-slate-900 text-clean-white py-4 px-4 border-b border-white/5 flex justify-center items-center">
+        <div className="flex items-center gap-3 font-inter text-sm md:text-base font-semibold tracking-wider uppercase opacity-80">
+          <span className="text-action-accent whitespace-nowrap">Built for:</span>
+          <div className="h-6 overflow-hidden relative w-48 text-left">
+            <div className="flex flex-col animate-vertical-marquee text-white absolute top-0 left-0 w-full">
+              {/* Original List */}
+              <span className="h-6 flex items-center">Plumbers</span>
+              <span className="h-6 flex items-center">Electricians</span>
+              <span className="h-6 flex items-center">HVAC</span>
+              <span className="h-6 flex items-center">Roofers</span>
+              <span className="h-6 flex items-center">Landscapers</span>
+              <span className="h-6 flex items-center">House Cleaners</span>
+              <span className="h-6 flex items-center">Window Cleaners</span>
+              <span className="h-6 flex items-center">Power Washers</span>
+              <span className="h-6 flex items-center">Handymen</span>
+              <span className="h-6 flex items-center">Remodelers</span>
+              <span className="h-6 flex items-center">Painters</span>
+              <span className="h-6 flex items-center">Contractors</span>
+              {/* Duplicated List for seamless infinite loop */}
+              <span className="h-6 flex items-center">Plumbers</span>
+              <span className="h-6 flex items-center">Electricians</span>
+              <span className="h-6 flex items-center">HVAC</span>
+              <span className="h-6 flex items-center">Roofers</span>
+              <span className="h-6 flex items-center">Landscapers</span>
+              <span className="h-6 flex items-center">House Cleaners</span>
+              <span className="h-6 flex items-center">Window Cleaners</span>
+              <span className="h-6 flex items-center">Power Washers</span>
+              <span className="h-6 flex items-center">Handymen</span>
+              <span className="h-6 flex items-center">Remodelers</span>
+              <span className="h-6 flex items-center">Painters</span>
+              <span className="h-6 flex items-center">Contractors</span>
+            </div>
+          </div>
         </div>
       </section>
 
