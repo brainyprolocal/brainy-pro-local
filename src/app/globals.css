@@ -16,7 +16,7 @@
   --animate-shimmer: shimmer 2s infinite linear;
   --animate-pulse-glow: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-float: float 3s ease-in-out infinite;
-  --animate-vertical-marquee: verticalMarquee 15s linear infinite;
+  --animate-vertical-marquee: verticalMarquee 24s ease-in-out infinite;
 }
 
 @keyframes fadeIn {
@@ -50,7 +50,18 @@
 }
 
 @keyframes verticalMarquee {
-  0% { transform: translateY(0); }
+  0%, 7.33% { transform: translateY(0); }
+  8.33%, 15.66% { transform: translateY(-4.166%); }
+  16.66%, 24% { transform: translateY(-8.333%); }
+  25%, 32.33% { transform: translateY(-12.5%); }
+  33.33%, 40.66% { transform: translateY(-16.666%); }
+  41.66%, 49% { transform: translateY(-20.833%); }
+  50%, 57.33% { transform: translateY(-25%); }
+  58.33%, 65.66% { transform: translateY(-29.166%); }
+  66.66%, 74% { transform: translateY(-33.333%); }
+  75%, 82.33% { transform: translateY(-37.5%); }
+  83.33%, 90.66% { transform: translateY(-41.666%); }
+  91.66%, 99% { transform: translateY(-45.833%); }
   100% { transform: translateY(-50%); }
 }
 
