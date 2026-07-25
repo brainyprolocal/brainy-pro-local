@@ -67,7 +67,7 @@ const tiers: Tier[] = [
       'Invoicing & Tap-to-Pay Integration.',
       'Form & Survey Builder.',
       'Call Tracking & Recording.',
-      'Advanced Automation Workflows.',
+      'Desktop and Mobile CRM App.',
     ],
     cta: 'Get Custom Quote',
     tierValue: 'Custom Ultimate Tier',
