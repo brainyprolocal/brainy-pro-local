@@ -107,6 +107,26 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
+       *  1.5. TRADES BAR
+       * ═══════════════════════════════════════════ */}
+      <section className="bg-slate-900 text-clean-white py-4 px-4 border-b border-white/5">
+        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-inter text-sm md:text-base font-semibold tracking-wider uppercase opacity-80">
+          <span className="text-action-accent">Built for:</span>
+          <span>Plumbers</span>
+          <span className="text-gray-600 hidden sm:inline">•</span>
+          <span>Electricians</span>
+          <span className="text-gray-600 hidden sm:inline">•</span>
+          <span>HVAC</span>
+          <span className="text-gray-600 hidden sm:inline">•</span>
+          <span>Roofers</span>
+          <span className="text-gray-600 hidden sm:inline">•</span>
+          <span>Landscapers</span>
+          <span className="text-gray-600 hidden sm:inline">•</span>
+          <span>Cleaners</span>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
        *  2. SOCIAL PROOF BAR
        * ═══════════════════════════════════════════ */}
       <section className="bg-trust-navy text-clean-white py-12 px-4 border-b border-white/5">
@@ -126,6 +146,64 @@ export default function HomePage() {
           <div>
             <div className="text-3xl font-bold font-outfit text-action-accent mb-1">100%</div>
             <div className="text-xs font-inter text-gray-400 uppercase tracking-wider">Contractor-Focused</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+       *  2.5. BUILT BY A CONTRACTOR
+       * ═══════════════════════════════════════════ */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 border-b border-gray-100">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 bg-trust-navy/5 text-trust-navy rounded-full border border-trust-navy/10 text-sm font-inter font-semibold uppercase tracking-wider">
+                Our Story
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-outfit font-bold text-trust-navy mb-6 leading-tight">
+                Built by a contractor who spent 20+ years in the field.
+              </h2>
+              <p className="text-lg text-gray-600 font-inter mb-6 leading-relaxed">
+                We&apos;re not some tech bros from Silicon Valley trying to disrupt an industry we don&apos;t understand. We know the frustrations: seasonal slowdowns, unreliable lead vendors, and the sinking feeling when follow-ups fall through the cracks because you&apos;re busy on a job site.
+              </p>
+              <p className="text-lg text-gray-600 font-inter leading-relaxed">
+                We built this platform to be your operational partner. Our goal isn&apos;t just to get you leads—it&apos;s to help you build customer connections, establish unshakeable local trust, and buy back your time with systems that actually work.
+              </p>
+            </div>
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-tr from-connection-blue to-action-accent rounded-2xl transform translate-x-4 translate-y-4 opacity-20"></div>
+              <div className="relative bg-white p-8 rounded-2xl border border-gray-100 shadow-xl">
+                <ul className="space-y-6">
+                  <li className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-action-accent shrink-0 mt-1">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    </div>
+                    <div>
+                      <h4 className="font-outfit font-bold text-trust-navy text-lg mb-1">True Partnership</h4>
+                      <p className="font-inter text-gray-600 text-sm">We succeed when your business grows, not when you just click an ad.</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-action-accent shrink-0 mt-1">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    </div>
+                    <div>
+                      <h4 className="font-outfit font-bold text-trust-navy text-lg mb-1">Building Trust</h4>
+                      <p className="font-inter text-gray-600 text-sm">Automated systems that turn one-time clients into lifelong advocates.</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-action-accent shrink-0 mt-1">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <div>
+                      <h4 className="font-outfit font-bold text-trust-navy text-lg mb-1">Buying Back Time</h4>
+                      <p className="font-inter text-gray-600 text-sm">Stop doing manual follow-ups at 9 PM. Let the software do the heavy lifting.</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -205,9 +283,12 @@ export default function HomePage() {
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-trust-navy text-white">
         <div className="max-w-5xl mx-auto text-center">
           <svg className="w-12 h-12 text-action-accent mx-auto mb-6 opacity-80" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
-          <blockquote className="font-outfit text-2xl sm:text-3xl font-medium leading-tight mb-8">
-            &ldquo;Built by a contractor who spent 20+ years in the field and knows what it takes to run a business — not just market one.&rdquo;
-          </blockquote>
+          <h2 className="text-3xl sm:text-4xl font-outfit font-bold mb-4">
+            Don&apos;t Just Take Our Word For It
+          </h2>
+          <p className="text-lg text-white/80 font-inter mb-12">
+            See what other Maryland contractors are saying about the platform.
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
             <div className="bg-white/5 p-6 rounded-xl border border-white/10 text-left">
