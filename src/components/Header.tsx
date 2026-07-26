@@ -39,7 +39,9 @@ export default function Header() {
             <div className="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0 border border-gray-100 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
               <img src="/logo-icon.png" alt="brAIny pro logo icon" className="w-full h-full object-contain" />
             </div>
-            <span className="font-[family-name:var(--font-outfit)] text-2xl font-bold tracking-tight text-gradient transition-transform group-hover:scale-105">
+            <span className={`font-[family-name:var(--font-outfit)] text-2xl font-bold tracking-tight transition-transform group-hover:scale-105 ${
+              isScrolled ? 'text-gradient' : 'text-white drop-shadow-md'
+            }`}>
               brAIny pro
             </span>
           </Link>
@@ -48,14 +50,18 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               href="/platform"
-              className="font-medium text-trust-navy hover:text-action-accent transition-colors"
+              className={`font-semibold transition-colors ${
+                isScrolled ? 'text-trust-navy hover:text-action-accent' : 'text-white/90 hover:text-white drop-shadow-md'
+              }`}
             >
               Our Platform
             </Link>
             <a
               href="/#pricing"
               onClick={scrollToPricing}
-              className="font-medium text-trust-navy hover:text-action-accent transition-colors cursor-pointer"
+              className={`font-semibold transition-colors cursor-pointer ${
+                isScrolled ? 'text-trust-navy hover:text-action-accent' : 'text-white/90 hover:text-white drop-shadow-md'
+              }`}
             >
               Pricing
             </a>
@@ -66,7 +72,11 @@ export default function Header() {
             <a
               href="/#pricing"
               onClick={scrollToPricing}
-              className="inline-flex items-center justify-center px-6 py-2.5 bg-action-accent text-clean-white font-semibold rounded-full shadow-lg hover:bg-connection-blue hover:scale-105 transition-all duration-300 hover:shadow-xl cursor-pointer"
+              className={`inline-flex items-center justify-center px-6 py-2.5 font-semibold rounded-full shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-xl cursor-pointer ${
+                isScrolled
+                  ? 'bg-action-accent text-clean-white hover:bg-connection-blue'
+                  : 'bg-white text-trust-navy hover:bg-slate-100'
+              }`}
             >
               View Platform Pricing
             </a>
@@ -74,7 +84,9 @@ export default function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 text-trust-navy focus:outline-none"
+            className={`md:hidden p-2 focus:outline-none transition-colors ${
+              isScrolled ? 'text-trust-navy' : 'text-white drop-shadow-md'
+            }`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
           >
