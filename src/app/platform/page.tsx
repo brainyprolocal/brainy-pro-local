@@ -91,7 +91,7 @@ const features: Feature[] = [
   {
     title: 'Automated Email & Text Follow-up Sequences',
     description:
-      'Leads don&apos;t go cold on your watch. Automated drip campaigns nurture every prospect with perfectly timed texts and emails until they&apos;re ready to book.',
+      "Leads don't go cold on your watch. Automated drip campaigns nurture every prospect with perfectly timed texts and emails until they're ready to book.",
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -191,7 +191,7 @@ const features: Feature[] = [
   {
     title: 'Job Bidding Software',
     description:
-      'Build and send professional estimates and bids in minutes. Track which bids are pending, accepted, or lost — and follow up automatically on the ones that haven&apos;t responded.',
+      "Build and send professional estimates and bids in minutes. Track which bids are pending, accepted, or lost — and follow up automatically on the ones that haven't responded.",
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
