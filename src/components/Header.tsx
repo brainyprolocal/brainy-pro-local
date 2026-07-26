@@ -16,9 +16,14 @@ export default function Header() {
   }, []);
 
   const scrollToPricing = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsMobileMenuOpen(false);
-    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+    const pricingEl = document.getElementById('pricing');
+    if (pricingEl) {
+      e.preventDefault();
+      setIsMobileMenuOpen(false);
+      pricingEl.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      setIsMobileMenuOpen(false);
+    }
   };
 
   return (
