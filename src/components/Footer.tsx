@@ -5,9 +5,14 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand Column */}
           <div className="space-y-4">
-            <span className="font-[family-name:var(--font-outfit)] text-3xl font-bold text-clean-white">
-              brAIny pro
-            </span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white rounded-xl p-1.5 shadow-md flex items-center justify-center shrink-0">
+                <img src="/logo-icon.png" alt="brAIny pro logo icon" className="w-full h-full object-contain" />
+              </div>
+              <span className="font-[family-name:var(--font-outfit)] text-3xl font-bold text-clean-white">
+                brAIny pro
+              </span>
+            </div>
             <p className="text-sm font-medium text-blue-200">
               Build trust. Buy back time. Keep your clients for life.
             </p>
