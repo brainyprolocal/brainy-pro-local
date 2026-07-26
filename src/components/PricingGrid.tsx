@@ -67,6 +67,7 @@ const tiers: Tier[] = [
       'Invoicing & Tap-to-Pay Integration.',
       'Form & Survey Builder.',
       'Call Tracking & Recording.',
+      'AI-Powered Review Replies — Respond to every review automatically.',
       'Desktop and Mobile CRM App.',
       'Job Bidding Software.',
     ],
