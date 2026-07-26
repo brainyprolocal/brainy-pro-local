@@ -5,7 +5,7 @@ import MasterLeadModal from './MasterLeadModal';
 
 /* ─────────────────────────────────────────
  * Tier data — all features belong to the
- * brAIny pro platform (white-label strict)
+ * brainy pro platform (white-label strict)
  * ───────────────────────────────────────── */
 
 interface Tier {
@@ -51,7 +51,7 @@ const tiers: Tier[] = [
     badge: 'Most Popular',
   },
   {
-    name: 'brAIny pro Ultimate',
+    name: 'brainy pro Ultimate',
     price: 'Contact for Pricing',
     setupNote: '+$100 one-time setup fee',
     description: 'The full-stack digital backend — everything, automated.',

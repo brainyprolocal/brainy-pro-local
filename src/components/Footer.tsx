@@ -7,10 +7,10 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white rounded-xl p-1.5 shadow-md flex items-center justify-center shrink-0">
-                <img src="/logo-icon.png" alt="brAIny pro logo icon" className="w-full h-full object-contain" />
+                <img src="/logo-icon.png" alt="brainy pro logo icon" className="w-full h-full object-contain" />
               </div>
               <span className="font-[family-name:var(--font-outfit)] text-3xl font-bold text-clean-white">
-                brAIny pro
+                brainy pro
               </span>
             </div>
             <p className="text-sm font-medium text-blue-200">
@@ -72,7 +72,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-gray-800 text-sm text-center text-gray-500 flex flex-col md:flex-row justify-between items-center">
-          <p>&copy; {new Date().getFullYear()} brAIny pro. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} brainy pro. All rights reserved.</p>
           <p className="mt-2 md:mt-0">Built with 20+ years of home service experience.</p>
         </div>
       </div>

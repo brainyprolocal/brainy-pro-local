@@ -4,13 +4,13 @@ import PricingGrid from '@/components/PricingGrid';
 import FAQAccordion from '@/components/FAQAccordion';
 
 export const metadata: Metadata = {
-  title: 'brAIny pro | The Operational Platform for Maryland Home Service Pros',
+  title: 'brainy pro | The Operational Platform for Maryland Home Service Pros',
   description: 'Build trust. Buy back time. Keep your clients for life. The all-in-one operational platform and networking hub for Maryland\'s top home service professionals.',
 };
 
 const faqItems = [
   {
-    question: 'What exactly does brAIny pro do?',
+    question: 'What exactly does brainy pro do?',
     answer: 'We build and install a custom digital backend for your home service business. This includes customer database reactivation, a centralized CRM to manage leads and jobs, and an automated system to capture reviews after you complete a job. Think of us as your operational partner for the digital side of your business.',
   },
   {
@@ -27,7 +27,7 @@ const faqItems = [
   },
   {
     question: 'Do I need to be tech-savvy?',
-    answer: 'Not at all. We built brAIny pro specifically for contractors who want the benefits of modern technology without the headache of managing it. We set everything up, train you on the simple dashboard, and provide ongoing support so you never feel lost.',
+    answer: 'Not at all. We built brainy pro specifically for contractors who want the benefits of modern technology without the headache of managing it. We set everything up, train you on the simple dashboard, and provide ongoing support so you never feel lost.',
   },
   {
     question: 'What area do you serve?',
@@ -41,13 +41,13 @@ export default function HomePage() {
     '@graph': [
       {
         '@type': 'WebSite',
-        'name': 'brAIny pro',
+        'name': 'brainy pro',
         'url': 'https://brainyprolocal.com',
         'description': 'The all-in-one operational platform for Maryland home service professionals.',
       },
       {
         '@type': 'Organization',
-        'name': 'brAIny pro',
+        'name': 'brainy pro',
         'url': 'https://brainyprolocal.com',
         'description': 'Build trust. Buy back time. Keep your clients for life.',
         'areaServed': {
@@ -354,7 +354,7 @@ export default function HomePage() {
               Frequently Asked Questions
             </h2>
             <p className="text-lg text-gray-600 font-inter">
-              Everything you need to know about partnering with brAIny pro.
+              Everything you need to know about partnering with brainy pro.
             </p>
           </div>
           <FAQAccordion items={faqItems} />

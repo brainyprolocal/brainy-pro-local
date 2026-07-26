@@ -25,21 +25,21 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://brainyprolocal.com'),
   title: {
-    template: '%s | brAIny pro',
-    default: 'brAIny pro | The Operational Platform for Maryland Home Service Pros',
+    template: '%s | brainy pro',
+    default: 'brainy pro | The Operational Platform for Maryland Home Service Pros',
   },
   description: 'Build trust. Buy back time. Keep your clients for life. The all-in-one operational platform and networking hub for Maryland\'s top home service professionals.',
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://brainyprolocal.com',
-    siteName: 'brAIny pro',
+    siteName: 'brainy pro',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'brAIny pro — The Operational Platform for Maryland Home Service Pros',
+        alt: 'brainy pro — The Operational Platform for Maryland Home Service Pros',
       },
     ],
   },
@@ -52,7 +52,7 @@ const jsonLd = {
       "@type": "WebSite",
       "@id": "https://brainyprolocal.com/#website",
       "url": "https://brainyprolocal.com/",
-      "name": "brAIny pro",
+      "name": "brainy pro",
       "description": "The all-in-one operational platform for Maryland home service professionals.",
       "publisher": {
         "@id": "https://brainyprolocal.com/#organization"
@@ -61,7 +61,7 @@ const jsonLd = {
     {
       "@type": "Organization",
       "@id": "https://brainyprolocal.com/#organization",
-      "name": "brAIny pro",
+      "name": "brainy pro",
       "url": "https://brainyprolocal.com/",
       "logo": {
         "@type": "ImageObject",

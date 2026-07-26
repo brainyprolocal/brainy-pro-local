@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Our Platform — Everything We Build For You',
   description:
-    'Explore every tool, system, and automation the brAIny pro platform offers. From CRM and review capture to AI-powered replies and job bidding — see the full picture.',
+    'Explore every tool, system, and automation the brainy pro platform offers. From CRM and review capture to AI-powered replies and job bidding — see the full picture.',
 };
 
 /* ─────────────────────────────────────────
@@ -295,7 +295,7 @@ export default function PlatformPage() {
               Every Tool in the Toolbox
             </h2>
             <p className="text-lg text-gray-600 font-inter max-w-2xl mx-auto">
-              Here&apos;s everything the brAIny pro platform can do for your business. Every contractor is different — during our consultation, we&apos;ll figure out exactly which pieces make sense for you.
+              Here&apos;s everything the brainy pro platform can do for your business. Every contractor is different — during our consultation, we&apos;ll figure out exactly which pieces make sense for you.
             </p>
           </div>
 

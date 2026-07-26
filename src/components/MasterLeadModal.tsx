@@ -29,7 +29,7 @@ const TIER_OPTIONS = [
 
 export default function MasterLeadModal({ isOpen, onClose, selectedTier }: MasterLeadModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Join the brAIny pro Network">
+    <Modal isOpen={isOpen} onClose={onClose} title="Join the brainy pro Network">
       {/* ──────────────────────────────────────────────────────────────
        *  MASTER LEAD-CAPTURE FORM CONTAINER
        *  When the live form iframe is ready, replace the entire
