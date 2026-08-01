@@ -26,6 +26,17 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  // Redirect old /platform route to home page
+  async redirects() {
+    return [
+      {
+        source: '/platform',
+        destination: '/',
+        permanent: true,
+      },
+    ];
+  },
+
   // Security headers for production
   async headers() {
     return [

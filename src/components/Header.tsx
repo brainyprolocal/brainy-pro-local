@@ -15,17 +15,6 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToPricing = (e: React.MouseEvent) => {
-    const pricingEl = document.getElementById('pricing');
-    if (pricingEl) {
-      e.preventDefault();
-      setIsMobileMenuOpen(false);
-      pricingEl.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      setIsMobileMenuOpen(false);
-    }
-  };
-
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -49,37 +38,35 @@ export default function Header() {
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link
-              href="/platform"
+              href="/"
               className={`font-semibold transition-colors ${
                 isScrolled ? 'text-trust-navy hover:text-action-accent' : 'text-white/90 hover:text-white drop-shadow-md'
               }`}
             >
-              Our Platform
+              Home
             </Link>
-            <a
-              href="/#pricing"
-              onClick={scrollToPricing}
-              className={`font-semibold transition-colors cursor-pointer ${
+            <Link
+              href="/pricing"
+              className={`font-semibold transition-colors ${
                 isScrolled ? 'text-trust-navy hover:text-action-accent' : 'text-white/90 hover:text-white drop-shadow-md'
               }`}
             >
               Pricing
-            </a>
+            </Link>
           </nav>
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <a
-              href="/#pricing"
-              onClick={scrollToPricing}
-              className={`inline-flex items-center justify-center px-6 py-2.5 font-semibold rounded-full shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-xl cursor-pointer ${
+            <Link
+              href="/pricing"
+              className={`inline-flex items-center justify-center px-6 py-2.5 font-semibold rounded-full shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-xl ${
                 isScrolled
                   ? 'bg-action-accent text-clean-white hover:bg-connection-blue'
                   : 'bg-white text-trust-navy hover:bg-slate-100'
               }`}
             >
               View Platform Pricing
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -114,26 +101,26 @@ export default function Header() {
         <div className="md:hidden absolute top-full left-0 right-0 glass shadow-lg animate-slide-down border-t border-gray-100">
           <div className="flex flex-col px-4 py-6 space-y-4">
             <Link
-              href="/platform"
+              href="/"
               onClick={() => setIsMobileMenuOpen(false)}
               className="text-lg font-medium py-2 text-trust-navy hover:text-action-accent transition-colors"
             >
-              Our Platform
+              Home
             </Link>
-            <a
-              href="/#pricing"
-              onClick={scrollToPricing}
+            <Link
+              href="/pricing"
+              onClick={() => setIsMobileMenuOpen(false)}
               className="text-lg font-medium py-2 text-trust-navy hover:text-action-accent transition-colors"
             >
               Pricing
-            </a>
-            <a
-              href="/#pricing"
-              onClick={scrollToPricing}
+            </Link>
+            <Link
+              href="/pricing"
+              onClick={() => setIsMobileMenuOpen(false)}
               className="inline-block mt-4 text-center px-6 py-3 bg-action-accent text-clean-white font-semibold rounded-full shadow-md"
             >
               View Platform Pricing
-            </a>
+            </Link>
           </div>
         </div>
       )}
