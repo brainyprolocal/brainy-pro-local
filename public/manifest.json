@@ -1,10 +1,23 @@
 {
   "name": "brainy pro",
   "short_name": "brainy pro",
-  "description": "Find trusted home service pros in Central Maryland",
+  "description": "The all-in-one operational platform for Maryland home service professionals",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
-  "theme_color": "#1E3A8A",
-  "icons": []
+  "theme_color": "#1D4781",
+  "icons": [
+    {
+      "src": "/brand/logo-icon-blue.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/logo-icon-blue.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }

@@ -66,6 +66,7 @@ export default function PricingPage() {
             href="#pricing"
             className="inline-flex items-center justify-center px-10 py-4 text-lg font-bold text-trust-navy bg-clean-white rounded-full shadow-xl hover:bg-slate-100 hover:scale-105 transition-all duration-300 gap-3 font-montserrat group"
           >
+            <img src="/brand/logo-icon-blue.svg" alt="" className="w-6 h-6" />
             View Platform Pricing
             <svg className="w-5 h-5 group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -344,6 +345,7 @@ export default function PricingPage() {
         <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/3 w-96 h-96 bg-trust-navy/20 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
+          <img src="/brand/Brainy Pro Text White.svg" alt="brainy pro" className="h-10 sm:h-12 mx-auto mb-4" />
           <h2 className="text-3xl md:text-5xl font-outfit font-bold text-clean-white mb-6">
             Ready to Stop Chasing Leads?
           </h2>
@@ -354,6 +356,7 @@ export default function PricingPage() {
             href="#pricing"
             className="inline-flex items-center justify-center px-10 py-4 text-lg font-bold text-connection-blue bg-clean-white rounded-full shadow-xl hover:bg-slate-100 hover:scale-105 transition-all duration-300 gap-3 font-montserrat"
           >
+            <img src="/brand/logo-icon-blue.svg" alt="" className="w-6 h-6" />
             View Platform Pricing
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
