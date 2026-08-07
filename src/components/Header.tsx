@@ -25,14 +25,11 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0 border border-gray-100 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-              <img src="/logo-icon.png" alt="brainy pro logo icon" className="w-full h-full object-contain" />
-            </div>
-            <span className={`font-[family-name:var(--font-outfit)] text-2xl font-bold tracking-tight transition-transform group-hover:scale-105 ${
-              isScrolled ? 'text-gradient' : 'text-white drop-shadow-md'
-            }`}>
-              brainy pro
-            </span>
+            <img
+              src={isScrolled ? '/brand/logo-full-blue.svg' : '/brand/logo-full-white.svg'}
+              alt="brainy pro official logo"
+              className="h-9 sm:h-10 w-auto object-contain transition-all duration-300 group-hover:scale-105"
+            />
           </Link>
 
           {/* Desktop Nav */}
