@@ -6,11 +6,12 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <img
-                src="/brand/logo-full-white.svg"
-                alt="brainy pro official logo"
-                className="h-10 sm:h-12 w-auto object-contain"
-              />
+              <div className="w-10 h-10 bg-white rounded-xl p-1.5 shadow-md flex items-center justify-center shrink-0">
+                <img src="/brand/logo-icon-blue.svg" alt="brainy pro logo icon" className="w-full h-full object-contain" />
+              </div>
+              <span className="font-[family-name:var(--font-outfit)] text-3xl font-bold text-clean-white">
+                brainy pro
+              </span>
             </div>
             <p className="text-sm font-medium text-blue-200">
               Build trust. Buy back time. Keep your clients for life.
