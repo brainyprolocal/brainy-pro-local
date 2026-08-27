@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
 import RSVPForm from '@/components/businessandbrews/RSVPForm';
-import WaveDivider from '@/components/businessandbrews/WaveDivider';
 
 export const metadata: Metadata = {
   title: 'Montgomery County | Business & Brews',
@@ -41,12 +40,17 @@ export default function MontgomeryCountyPage() {
         </div>
       </div>
 
-      {/* Wave transition into RSVP */}
-      <WaveDivider color="#1D4781" />
-
-      {/* RSVP Section */}
-      <div className="bg-connection-blue/10 pb-24 pt-8 px-6">
-        <RSVPForm eventName="Business & Brews — Montgomery County" />
+      {/* RSVP Section with Background Flair */}
+      <div className="relative py-24 px-6 overflow-hidden mt-12">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-action-accent/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-connection-blue/10 to-transparent" />
+          <div className="absolute top-1/2 left-0 w-96 h-96 bg-action-accent/10 rounded-full blur-[100px] -translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute top-1/2 right-0 w-96 h-96 bg-connection-blue/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+        </div>
+        <div className="relative z-10">
+          <RSVPForm eventName="Business & Brews — Montgomery County" />
+        </div>
       </div>
     </div>
   );
