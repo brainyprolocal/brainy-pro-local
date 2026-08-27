@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /businessandbrews
 
 Sitemap: https://brainyprolocal.com/sitemap.xml
