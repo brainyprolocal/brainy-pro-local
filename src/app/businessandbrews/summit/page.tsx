@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
+import RSVPForm from '@/components/businessandbrews/RSVPForm';
 
 export const metadata: Metadata = {
   title: 'Summit | Business & Brews',
@@ -7,16 +8,16 @@ export const metadata: Metadata = {
 
 export default function SummitPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="max-w-2xl mx-auto text-center px-6">
+    <div className="min-h-screen flex flex-col items-center justify-center py-20 px-6">
+      <div className="max-w-2xl mx-auto text-center">
         <span className="inline-block px-4 py-1 rounded-full text-sm font-medium bg-action-accent/20 text-action-accent border border-action-accent/30 mb-6">
           Online Event
         </span>
         <h1 className="text-4xl md:text-6xl font-montserrat font-bold mb-4">
-          Business & Brews Summit
+          Business &amp; Brews Summit
         </h1>
         <p className="text-xl text-white/60 mb-8 tracking-wide">
-          Business & Brews
+          Business &amp; Brews
         </p>
         <p className="text-lg text-white/80 mb-2">Virtual Event</p>
         <p className="text-lg text-white/80 mb-2">Date TBA</p>
@@ -33,6 +34,8 @@ export default function SummitPage() {
         >
           View 2026 Agenda &rarr;
         </Link>
+
+        <RSVPForm eventName="Business & Brews Summit — Online" />
       </div>
     </div>
   );
