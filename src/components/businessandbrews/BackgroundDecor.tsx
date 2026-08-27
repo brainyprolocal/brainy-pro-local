@@ -25,24 +25,6 @@ export default function BackgroundDecor() {
         }}
       />
 
-      {/* Subtle geometric shapes */}
-      {/* Diamond — top left */}
-      <div
-        className="absolute top-24 left-[10%] w-16 h-16 border border-white/[0.04] rotate-45"
-      />
-      {/* Diamond — bottom right */}
-      <div
-        className="absolute bottom-32 right-[15%] w-24 h-24 border border-white/[0.04] rotate-45"
-      />
-      {/* Circle — mid right */}
-      <div
-        className="absolute top-[40%] right-[8%] w-20 h-20 rounded-full border border-connection-blue/[0.08]"
-      />
-      {/* Circle — lower left */}
-      <div
-        className="absolute bottom-[25%] left-[18%] w-12 h-12 rounded-full border border-action-accent/[0.08]"
-      />
-
       {/* Dot grid pattern overlay */}
       <div
         className="absolute inset-0 opacity-[0.015]"

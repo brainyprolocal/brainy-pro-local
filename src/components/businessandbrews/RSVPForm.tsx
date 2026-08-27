@@ -15,7 +15,7 @@ export default function RSVPForm({ eventName }: RSVPFormProps) {
 
   if (state?.success) {
     return (
-      <div className="max-w-md mx-auto mt-12 p-8 rounded-2xl bg-white/5 border border-white/10 text-center">
+      <div className="max-w-md mx-auto p-8 rounded-2xl bg-white/5 border border-white/10 text-center">
         <div className="text-4xl mb-4">🍻</div>
         <p className="text-xl font-semibold font-montserrat mb-2">RSVP Received!</p>
         <p className="text-white/70">{state.message}</p>
@@ -24,7 +24,7 @@ export default function RSVPForm({ eventName }: RSVPFormProps) {
   }
 
   return (
-    <form action={formAction} className="max-w-md mx-auto mt-12">
+    <form action={formAction} className="max-w-md mx-auto">
       <div className="p-8 rounded-2xl bg-white/5 border border-white/10 space-y-5">
         <h3 className="text-xl font-semibold font-montserrat text-center mb-6">
           RSVP
