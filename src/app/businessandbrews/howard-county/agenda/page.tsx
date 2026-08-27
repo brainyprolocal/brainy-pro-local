@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import WaveDivider from '@/components/businessandbrews/WaveDivider';
 
 export const metadata: Metadata = {
   title: 'Agenda — Howard County | Business & Brews',
@@ -6,24 +7,30 @@ export const metadata: Metadata = {
 
 export default function HowardCountyAgendaPage() {
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
-      <div className="mb-12">
-        <p className="text-sm text-white/40 uppercase tracking-widest mb-2">
-          Howard County
-        </p>
-        <h1 className="text-3xl md:text-5xl font-montserrat font-bold mb-2">
-          2026 Meeting Agenda
-        </h1>
-        <p className="text-white/60">Howard County, Maryland</p>
+    <div>
+      {/* Header section with gradient accent */}
+      <div className="bg-gradient-to-b from-connection-blue/15 to-transparent pt-20 pb-4 px-6">
+        <div className="max-w-3xl mx-auto">
+          <p className="text-sm text-white/40 uppercase tracking-widest mb-2">
+            Howard County
+          </p>
+          <h1 className="text-3xl md:text-5xl font-montserrat font-bold mb-2">
+            2026 Meeting Agenda
+          </h1>
+          <p className="text-white/60">Howard County, Maryland</p>
+        </div>
       </div>
 
-      <div>
+      <WaveDivider color="#1D4781" className="opacity-40" />
+
+      {/* Schedule */}
+      <div className="max-w-3xl mx-auto px-6 pt-8 pb-24">
         <div className="flex items-start gap-6 p-6 rounded-xl bg-white/5 border border-white/10 mb-4">
           <div className="text-action-accent font-mono text-sm whitespace-nowrap font-semibold min-w-[80px]">
             5:30 PM
           </div>
           <div>
-            <h2 className="font-semibold text-lg mb-1">Registration & Welcome</h2>
+            <h2 className="font-semibold text-lg mb-1">Registration &amp; Welcome</h2>
             <p className="text-white/60 text-sm">Check in, grab your name badge, and settle in.</p>
           </div>
         </div>
@@ -33,7 +40,7 @@ export default function HowardCountyAgendaPage() {
             6:00 PM
           </div>
           <div>
-            <h2 className="font-semibold text-lg mb-1">Networking & Brews</h2>
+            <h2 className="font-semibold text-lg mb-1">Networking &amp; Brews</h2>
             <p className="text-white/60 text-sm">Connect with fellow home service professionals over craft beers.</p>
           </div>
         </div>
@@ -54,7 +61,7 @@ export default function HowardCountyAgendaPage() {
           </div>
           <div>
             <h2 className="font-semibold text-lg mb-1">Panel Discussion</h2>
-            <p className="text-white/60 text-sm">Q&A with successful Maryland home service business owners.</p>
+            <p className="text-white/60 text-sm">Q&amp;A with successful Maryland home service business owners.</p>
           </div>
         </div>
         
