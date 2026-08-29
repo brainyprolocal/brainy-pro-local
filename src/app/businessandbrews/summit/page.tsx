@@ -31,7 +31,7 @@ export default function SummitPage() {
         <div className="max-w-5xl w-full grid md:grid-cols-2 gap-8 md:gap-12 items-start">
           {/* Event Info — left column */}
           <div className="text-center md:text-left">
-            <span className="inline-block px-4 py-1 rounded-full text-sm font-medium bg-action-accent/20 text-action-accent border border-action-accent/30 mb-4">
+            <span className="inline-block px-4 py-1 rounded-full text-sm font-medium bg-action-accent/40 text-white border border-action-accent/60 mb-4">
               Online Event
             </span>
             <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4">
