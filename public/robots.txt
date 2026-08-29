@@ -1,3 +1,9 @@
+User-agent: facebookexternalhit
+Allow: /businessandbrews
+
+User-agent: WhatsApp
+Allow: /businessandbrews
+
 User-agent: *
 Allow: /
 Disallow: /businessandbrews
