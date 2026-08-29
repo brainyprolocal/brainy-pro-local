@@ -90,7 +90,7 @@ export default function RSVPForm({ eventName }: RSVPFormProps) {
             id="suggestions"
             name="suggestions"
             rows={3}
-            placeholder="Any topics you'd like covered, dietary needs, etc."
+            placeholder="Any suggestions or topics you'd like covered?"
             className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-action-accent focus:border-transparent transition-all resize-none"
           />
         </div>

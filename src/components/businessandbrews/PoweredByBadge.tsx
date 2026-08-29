@@ -4,7 +4,7 @@ export default function PoweredByBadge() {
   return (
     <Link
       href="/"
-      className="fixed top-5 right-6 z-50 flex items-center gap-2.5 transition-opacity hover:opacity-80"
+      className="flex items-center justify-center gap-2.5 py-6 transition-opacity hover:opacity-80"
       aria-label="Powered by brainy pro"
     >
       <span className="text-sm font-medium text-white/70 tracking-wide">
