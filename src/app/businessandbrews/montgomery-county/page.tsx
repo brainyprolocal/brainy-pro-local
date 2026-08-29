@@ -27,9 +27,9 @@ export default function MontgomeryCountyPage() {
             <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4">
               Montgomery County
             </h1>
-            <p className="text-lg text-white/80 mb-1">Montgomery County, Maryland</p>
-            <p className="text-lg text-white/80 mb-1">Date TBA</p>
-            <p className="text-lg text-white/80 mb-4">Venue TBA</p>
+            <p className="text-lg text-white/80 mb-1">Friday, October 16, 2026 &bull; 6:00 &ndash; 7:30 PM</p>
+            <p className="text-lg text-white/80 mb-1">Stone Silo Brewery</p>
+            <p className="text-lg text-white/80 mb-4">28800 Kemptown Rd, Damascus, MD 20872</p>
             
             <div className="w-24 h-0.5 bg-action-accent/50 mx-auto md:mx-0 my-6"></div>
             
