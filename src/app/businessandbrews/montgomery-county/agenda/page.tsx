@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import WaveDivider from '@/components/businessandbrews/WaveDivider';
+import FallNetworkAgenda from '@/components/businessandbrews/FallNetworkAgenda';
 
 export const metadata: Metadata = {
   title: 'Agenda — Montgomery County | Business & Brews',
@@ -85,6 +86,12 @@ export default function MontgomeryCountyAgendaPage() {
           </div>
         </div>
       </div>
+
+      {/* Fall Network Meeting Agenda */}
+      <div className="max-w-3xl mx-auto px-6 pb-2">
+        <div className="w-full h-px bg-white/10 my-4" />
+      </div>
+      <FallNetworkAgenda />
     </div>
   );
 }
