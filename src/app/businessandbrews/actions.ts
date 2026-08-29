@@ -7,6 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export type RSVPState = {
   success: boolean;
   message: string;
+  attending?: string;
 } | null;
 
 export async function submitRSVP(
@@ -75,6 +76,7 @@ export async function submitRSVP(
 
     return {
       success: true,
+      attending,
       message: attending === 'yes'
         ? "You're in! We'll see you there. 🍻"
         : "Got it — thanks for letting us know!",

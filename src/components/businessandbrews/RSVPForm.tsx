@@ -3,11 +3,66 @@
 import { useActionState } from 'react';
 import { submitRSVP, type RSVPState } from '@/app/businessandbrews/actions';
 
-interface RSVPFormProps {
-  eventName: string;
+export interface EventDetails {
+  title: string;
+  startDate: string; // ISO 8601, e.g. "2026-10-16T18:00:00"
+  endDate: string;   // ISO 8601, e.g. "2026-10-16T19:30:00"
+  location: string;
+  description?: string;
 }
 
-export default function RSVPForm({ eventName }: RSVPFormProps) {
+interface RSVPFormProps {
+  eventName: string;
+  eventDetails?: EventDetails;
+}
+
+function toCalendarDate(iso: string): string {
+  return iso.replace(/[-:]/g, '').split('.')[0];
+}
+
+function buildGoogleCalUrl(event: EventDetails): string {
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: event.title,
+    dates: `${toCalendarDate(event.startDate)}/${toCalendarDate(event.endDate)}`,
+    location: event.location,
+    details: event.description || '',
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+function buildIcsContent(event: EventDetails): string {
+  const uid = `${toCalendarDate(event.startDate)}-${event.title.replace(/\s+/g, '')}@brainyprolocal.com`;
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//brainy pro//Business & Brews//EN',
+    'BEGIN:VEVENT',
+    `UID:${uid}`,
+    `DTSTART:${toCalendarDate(event.startDate)}`,
+    `DTEND:${toCalendarDate(event.endDate)}`,
+    `SUMMARY:${event.title}`,
+    `LOCATION:${event.location}`,
+    `DESCRIPTION:${event.description || ''}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+}
+
+function downloadIcs(event: EventDetails) {
+  const content = buildIcsContent(event);
+  const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${event.title.replace(/\s+/g, '-').toLowerCase()}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+export default function RSVPForm({ eventName, eventDetails }: RSVPFormProps) {
   const [state, formAction, isPending] = useActionState<RSVPState, FormData>(
     submitRSVP,
     null
@@ -19,6 +74,34 @@ export default function RSVPForm({ eventName }: RSVPFormProps) {
         <div className="text-4xl mb-4">🍻</div>
         <p className="text-xl font-semibold font-montserrat mb-2">RSVP Received!</p>
         <p className="text-white/70">{state.message}</p>
+
+        {state.attending === 'yes' && eventDetails && (
+          <div className="mt-6 pt-6 border-t border-white/10">
+            <p className="text-sm text-white/50 mb-3">Add to your calendar</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a
+                href={buildGoogleCalUrl(eventDetails)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-sm font-medium transition-all"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.5 3h-3V1.5h-1.5V3h-6V1.5H7.5V3h-3C3.675 3 3 3.675 3 4.5v15c0 .825.675 1.5 1.5 1.5h15c.825 0 1.5-.675 1.5-1.5v-15c0-.825-.675-1.5-1.5-1.5zm0 16.5h-15V9h15v10.5zm0-12h-15V4.5h15V7.5z" />
+                </svg>
+                Google Calendar
+              </a>
+              <button
+                onClick={() => downloadIcs(eventDetails)}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-sm font-medium transition-all"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                </svg>
+                Apple / Outlook
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

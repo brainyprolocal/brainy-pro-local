@@ -57,7 +57,16 @@ export default function MontgomeryCountyPage() {
 
           {/* RSVP — right column */}
           <div className="md:pt-4">
-            <RSVPForm eventName="Business & Brews — Montgomery County" />
+            <RSVPForm
+              eventName="Business & Brews — Montgomery County"
+              eventDetails={{
+                title: 'Business & Brews — Montgomery County',
+                startDate: '2026-10-16T18:00:00',
+                endDate: '2026-10-16T19:30:00',
+                location: 'Stone Silo Brewery, 28800 Kemptown Rd, Damascus, MD 20872',
+                description: 'Networking event for Maryland home service professionals. Hosted by brainy pro.',
+              }}
+            />
           </div>
         </div>
       </div>
