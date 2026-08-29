@@ -5,6 +5,16 @@ import EventBackground from '@/components/businessandbrews/EventBackground';
 
 export const metadata: Metadata = {
   title: 'Summit | Business & Brews',
+  openGraph: {
+    images: [
+      {
+        url: '/businessandbrews/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'brainy pro — Business & Brews Summit',
+      },
+    ],
+  },
 };
 
 export default function SummitPage() {
