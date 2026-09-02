@@ -37,9 +37,9 @@ export default function HowardCountyPage() {
             <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4">
               Howard County
             </h1>
-            <p className="text-lg text-white/80 mb-1">Howard County, Maryland</p>
-            <p className="text-lg text-white/80 mb-1">Date TBA</p>
-            <p className="text-lg text-white/80 mb-4">Venue TBA</p>
+            <p className="text-lg text-white/80 mb-1">Monday, September 14, 2026 &bull; 6:00 &ndash; 7:30 PM</p>
+            <p className="text-lg text-white/80 mb-1">Cushwa and Rad Pies Taproom</p>
+            <p className="text-lg text-white/80 mb-4">6695 Dobbin Rd Ste G, Columbia, MD 21045</p>
             
             <div className="w-24 h-0.5 bg-action-accent/50 mx-auto md:mx-0 my-6"></div>
             
@@ -57,7 +57,16 @@ export default function HowardCountyPage() {
 
           {/* RSVP — right column */}
           <div className="md:pt-4">
-            <RSVPForm eventName="Business & Brews — Howard County" />
+            <RSVPForm
+              eventName="Business & Brews — Howard County"
+              eventDetails={{
+                title: 'Business & Brews — Howard County',
+                startDate: '2026-09-14T18:00:00',
+                endDate: '2026-09-14T19:30:00',
+                location: 'Cushwa and Rad Pies Taproom, 6695 Dobbin Rd Ste G, Columbia, MD 21045',
+                description: 'Networking event for Maryland home service professionals. Hosted by brainy pro.',
+              }}
+            />
           </div>
         </div>
       </div>
