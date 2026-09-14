@@ -24,7 +24,7 @@ export default function HowardCountyAgendaPage() {
 
       <WaveDivider color="#1D4781" className="opacity-40" />
 
-      <FallNetworkAgenda />
+      <FallNetworkAgenda countySlug="howard-county" />
     </div>
   );
 }

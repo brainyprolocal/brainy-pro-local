@@ -24,7 +24,7 @@ export default function MontgomeryCountyAgendaPage() {
 
       <WaveDivider color="#1D4781" className="opacity-40" />
 
-      <FallNetworkAgenda />
+      <FallNetworkAgenda countySlug="montgomery-county" />
     </div>
   );
 }
