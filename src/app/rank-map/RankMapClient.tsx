@@ -16,6 +16,19 @@ const DEFAULT_SPACING: Record<number, number> = { 3: 2, 5: 5, 7: 3 };
 
 type Data = any;
 
+function getDisplayArea(biz: any, searchedNear?: string): string {
+  if (biz?.address) {
+    const parts = biz.address.split(',');
+    if (parts.length >= 2) {
+      const city = parts[parts.length - 2].trim();
+      const stateZip = parts[parts.length - 1].trim().split(' ')[0];
+      return `${city}, ${stateZip}`;
+    }
+  }
+  if (searchedNear) return searchedNear.split(',')[0].trim();
+  return 'your target service area';
+}
+
 function Stars({ v }: { v?: number }) {
   if (v === undefined || !Number.isFinite(v)) return <span className={s.muted}>No rating</span>;
   const full = Math.round(v);
@@ -412,6 +425,60 @@ export default function RankMapClient() {
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Local Link & Authority Roadmap Card */}
+            <div className={s.card} style={{ marginTop: 18 }}>
+              <div className={s.storyk}>Local Link & Authority Roadmap</div>
+              <div style={{ fontSize: 13, color: '#9aa5c6', marginBottom: 14 }}>
+                Google uses local link signals to determine prominence across neighboring grid zones. High-impact authority targets tailored for {getDisplayArea(biz, data.searchedNear)}:
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
+                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid #1a2240', borderRadius: 12, padding: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <b style={{ color: '#fff', fontSize: 14 }}>Chamber of Commerce & Rotary</b>
+                    <span className={s.cat} style={{ borderColor: '#7cf0c5', color: '#7cf0c5' }}>High Geo-Trust</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: '#8f9abb', lineHeight: 1.5 }}>
+                    Target membership listing in the {getDisplayArea(biz, data.searchedNear).split(',')[0]} Chamber of Commerce or County Trade Board. Establishes official municipal entity verification.
+                  </div>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid #1a2240', borderRadius: 12, padding: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <b style={{ color: '#fff', fontSize: 14 }}>Youth Sports & Community 5Ks</b>
+                    <span className={s.cat} style={{ borderColor: '#5b7cff', color: '#7aa8ff' }}>Local .org Links</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: '#8f9abb', lineHeight: 1.5 }}>
+                    Sponsor local youth soccer/baseball leagues or high school booster clubs. Delivers rare, hyper-local .org/.edu community links competitors can&apos;t automate.
+                  </div>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid #1a2240', borderRadius: 12, padding: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <b style={{ color: '#fff', fontSize: 14 }}>Equipment / Supplier Locators</b>
+                    <span className={s.cat} style={{ borderColor: '#ffd27a', color: '#ffd27a' }}>Industry Authority</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: '#8f9abb', lineHeight: 1.5 }}>
+                    Obtain authorized contractor / certified applicator listings on equipment manufacturer dealer locators. Boosts industry category relevance in Google&apos;s knowledge graph.
+                  </div>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid #1a2240', borderRadius: 12, padding: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <b style={{ color: '#fff', fontSize: 14 }}>Regional Trade & BNI Chapters</b>
+                    <span className={s.cat} style={{ borderColor: '#cfd6ea', color: '#cfd6ea' }}>NAP Anchor</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: '#8f9abb', lineHeight: 1.5 }}>
+                    Regional Better Business Bureau (BBB) profile, Home Service Guilds, and local business networking chapters to solidify local citation consistency.
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 14, padding: '10px 14px', borderRadius: 10, background: 'rgba(124,240,197,0.05)', border: '1px solid rgba(124,240,197,0.15)', fontSize: 12, color: '#7cf0c5' }}>
+                💡 <b>Strategy:</b> Securing 2–3 hyper-local links from organizations physically based in your red and yellow grid zones is the single most effective way to expand your top-3 ranking radius outward.
               </div>
             </div>
           </>
