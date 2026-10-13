@@ -152,17 +152,25 @@ export function normalizeBiz(o: any): Biz {
   };
 }
 
+const DEFAULT_PROJECT_ID = 'bb80d9a6-61f3-47e4-b118-88bddbd27710';
+
+function getProjectId(): string {
+  return process.env.OPENSEO_PROJECT_ID?.trim() || DEFAULT_PROJECT_ID;
+}
+
 export async function searchLocalBusinesses(
   query: string,
   near: { latitude: number; longitude: number; radiusKm: number },
 ): Promise<Biz[]> {
-  const sc: any = await callTool('search_local_businesses', { near, query });
+  const projectId = getProjectId();
+  const sc: any = await callTool('search_local_businesses', { projectId, near, query });
   const list = pick(sc, 'businesses', 'results', 'items') ?? (Array.isArray(sc) ? sc : []);
   return (list as any[]).map(normalizeBiz).filter((b) => b.cid && Number.isFinite(b.latitude));
 }
 
 export async function getBusinessProfile(cid: string): Promise<Biz | null> {
-  const sc: any = await callTool('get_business_profile', { cid });
+  const projectId = getProjectId();
+  const sc: any = await callTool('get_business_profile', { projectId, cid });
   const o = pick(sc, 'profile', 'business') ?? sc;
   const b = normalizeBiz(o);
   return b.cid || o ? { ...b, cid: b.cid || cid } : null;
@@ -197,8 +205,7 @@ export async function getLocalRankGrid(args: {
   gridSize: number;
   spacingKm: number;
 }): Promise<GridResult> {
-  const projectId = process.env.OPENSEO_PROJECT_ID;
-  if (!projectId) throw new Error('OPENSEO_PROJECT_ID is not configured');
+  const projectId = getProjectId();
   const sc: any = await callTool('get_local_rank_grid', {
     projectId,
     keyword: args.keyword,
