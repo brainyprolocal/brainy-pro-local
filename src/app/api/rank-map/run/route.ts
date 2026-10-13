@@ -134,9 +134,21 @@ export async function POST(req: NextRequest) {
       if (!near) return json({ error: 'Enter an address, city, or ZIP to search near' }, 400);
       const n = { latitude: r4(near.latitude), longitude: r4(near.longitude), radiusKm: 50 };
       const k = `rm:search:${query.toLowerCase()}:${n.latitude},${n.longitude},${n.radiusKm}`;
-      const s = await cached(k, () => searchLocalBusinesses(query, n), DAY, (v) => v.length > 0);
+      let s = await cached(k, () => searchLocalBusinesses(query, n), DAY, (v) => v.length > 0);
       if (s.hit) cacheHits.push('lookup');
       candidates = s.value.slice(0, 5);
+
+      // Fallback for SABs: try wider radius and location-assisted query if no candidates found
+      if (candidates.length === 0) {
+        const cleanQuery = query.replace(/,?\s*(llc|inc|co|corp|ltd)\.?$/i, '').trim();
+        const fallbackQuery = `${cleanQuery} ${searchedNear ? searchedNear.split(',')[0] : (body.location || '')}`.trim();
+        const fallbackN = { latitude: n.latitude, longitude: n.longitude, radiusKm: 100 };
+        const fallbackKey = `rm:search:${fallbackQuery.toLowerCase()}:${fallbackN.latitude},${fallbackN.longitude},100`;
+        const fallbackS = await cached(fallbackKey, () => searchLocalBusinesses(fallbackQuery, fallbackN), DAY, (v) => v.length > 0);
+        if (fallbackS.hit) cacheHits.push('lookup-fallback');
+        candidates = fallbackS.value.slice(0, 5);
+      }
+
       biz = candidates[0] ?? null;
     }
 
