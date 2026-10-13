@@ -160,7 +160,7 @@ export default function RankMapClient() {
               <div className={s.row}>
                 <span className={s.label}>Scan</span>
                 <div className={s.toggle}>
-                  {[3, 5, 7].map((n) => (
+                  {[3, 5].map((n) => (
                     <button key={n} type="button" className={grid === n ? s.on : ''} onClick={() => pickGrid(n)}>{n}×{n}</button>
                   ))}
                 </div>

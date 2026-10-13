@@ -202,7 +202,7 @@ export async function getLocalRankGrid(args: {
   keyword: string;
   center: { latitude: number; longitude: number };
   cid: string;
-  gridSize: number;
+  gridSize: 3 | 5;
   spacingKm: number;
 }): Promise<GridResult> {
   const projectId = getProjectId();

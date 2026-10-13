@@ -20,8 +20,8 @@ const json = (body: unknown, status = 200) => NextResponse.json(body, { status, 
 const r4 = (n: number) => Math.round(n * 1e4) / 1e4;
 /** Rank assigned to "not in the pack" when averaging (BrightLocal ATRP convention). */
 const NOT_FOUND = 21;
-const GRID_SIZES = [3, 5, 7];
-const DEFAULT_SPACING: Record<number, number> = { 3: 2, 5: 5, 7: 3 };
+const GRID_SIZES = [3, 5];
+const DEFAULT_SPACING: Record<number, number> = { 3: 2, 5: 5 };
 
 type Pt = { latitude: number; longitude: number };
 
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
   }
   const query = String(body.business || '').trim();
   const cidIn = body.cid ? String(body.cid) : '';
-  const gridSize = GRID_SIZES.includes(Number(body.grid)) ? Number(body.grid) : 5;
+  const gridSize: 3 | 5 = Number(body.grid) === 3 ? 3 : 5;
   const sp = Number(body.spacingKm);
   const spacingKm = Number.isFinite(sp) && sp >= 0.5 && sp <= 10 ? sp : DEFAULT_SPACING[gridSize];
   const keyword = body.keyword ? normalizeKeyword(String(body.keyword)) : '';
