@@ -335,7 +335,7 @@ export default function RankMapClient() {
                 </tbody>
               </table>
               {!data.hasFullResults && (
-                <div className={s.muted} style={{ marginTop: 8 }}>OpenSEO returned only the #1 result per point for this scan, so competitor share is measured by #1 spots.</div>
+                <div className={s.muted} style={{ marginTop: 8 }}>Competitor share is measured by #1 positions held across the scan grid.</div>
               )}
             </div>
           </>

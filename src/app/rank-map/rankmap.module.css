@@ -76,6 +76,8 @@
 @media (max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
 @media print{
   .noPrint{display:none!important}
+  :global(.leaflet-control-attribution){display:none!important}
+  :global(.leaflet-control-zoom){display:none!important}
   .root{position:static;overflow:visible;background:#07090f!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .main{grid-template-columns:1fr}
   .card{break-inside:avoid}
