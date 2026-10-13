@@ -338,6 +338,82 @@ export default function RankMapClient() {
                 <div className={s.muted} style={{ marginTop: 8 }}>Competitor share is measured by #1 positions held across the scan grid.</div>
               )}
             </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 18, marginTop: 18 }}>
+              {/* Category Gap Card */}
+              <div className={s.card}>
+                <div className={s.storyk}>Google Category Gap Analysis</div>
+                <div style={{ fontSize: 13, color: '#9aa5c6', marginBottom: 12 }}>
+                  Secondary categories are the #1 quick-win ranking signal on Google Maps. Here is how your profile compares to top competitors:
+                </div>
+
+                <div style={{ marginBottom: 14 }}>
+                  <div className={s.label} style={{ marginBottom: 6 }}>Your Current Categories</div>
+                  <div className={s.cats}>
+                    {data.categoryAudit?.yourCategories?.map((c: string) => (
+                      <span key={c} className={s.cat} style={{ borderColor: '#7cf0c5', color: '#7cf0c5' }}>✓ {c}</span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className={s.label} style={{ marginBottom: 6 }}>Categories Used by Competitors (Opportunities)</div>
+                  {data.categoryAudit?.missingCategories?.length ? (
+                    <div className={s.cats}>
+                      {data.categoryAudit.missingCategories.map((item: any) => (
+                        <span key={item.category} className={s.cat} style={{ borderColor: '#ffd27a', color: '#ffd27a' }}>
+                          + {item.category} <span style={{ opacity: 0.7, fontSize: 10 }}>({item.competitorCount} rivals)</span>
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className={s.muted}>You cover all categories used by top rivals in this scan!</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Review Topics & Customer Sentiment Card */}
+              <div className={s.card}>
+                <div className={s.storyk}>Review Topics & Customer Signals</div>
+                <div style={{ fontSize: 13, color: '#9aa5c6', marginBottom: 12 }}>
+                  Keywords frequently cited by Google algorithms from customer reviews:
+                </div>
+
+                {biz.placeTopics && Object.keys(biz.placeTopics).length > 0 ? (
+                  <div>
+                    <div className={s.label} style={{ marginBottom: 6 }}>Your Top Review Mentions</div>
+                    <div className={s.cats}>
+                      {Object.entries(biz.placeTopics)
+                        .sort((a: any, b: any) => Number(b[1]) - Number(a[1]))
+                        .slice(0, 10)
+                        .map(([topic, weight]) => (
+                          <span key={topic} className={s.cat} style={{ background: 'rgba(91,124,255,0.1)', borderColor: '#5b7cff', color: '#cfd6ea' }}>
+                            {topic} <span style={{ color: '#7cf0c5', fontWeight: 600 }}>({String(weight)})</span>
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className={s.muted}>No prominent place topics extracted from current reviews.</div>
+                )}
+
+                {data.competitors?.[0]?.placeTopics && Object.keys(data.competitors[0].placeTopics).length > 0 && (
+                  <div style={{ marginTop: 14 }}>
+                    <div className={s.label} style={{ marginBottom: 6 }}>Top Rival Review Mentions ({data.competitors[0].title})</div>
+                    <div className={s.cats}>
+                      {Object.entries(data.competitors[0].placeTopics)
+                        .sort((a: any, b: any) => Number(b[1]) - Number(a[1]))
+                        .slice(0, 8)
+                        .map(([topic, weight]) => (
+                          <span key={topic} className={s.cat} style={{ background: 'rgba(255,255,255,0.03)' }}>
+                            {topic} <span style={{ opacity: 0.6, fontSize: 10 }}>({String(weight)})</span>
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </>
         )}
       </div>
@@ -355,6 +431,16 @@ export default function RankMapClient() {
               {profile.wins ? `Holds #1 at ${profile.wins} point${profile.wins > 1 ? 's' : ''} — ${profile.region}.` : 'No #1 spots on this grid.'}
               {profile.top3 != null && ` Top 3 at ${profile.top3} points (ATRP ${profile.atrp}).`}
             </p>
+            {profile.placeTopics && Object.keys(profile.placeTopics).length > 0 && (
+              <div style={{ margin: '10px 0' }}>
+                <div className={s.label} style={{ marginBottom: 4 }}>Top Review Mentions</div>
+                <div className={s.cats}>
+                  {Object.entries(profile.placeTopics).slice(0, 8).map(([topic, weight]) => (
+                    <span key={topic} className={s.cat}>{topic} ({String(weight)})</span>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className={s.row}>
               {profile.website && <a className={s.ghost} href={profile.website} target="_blank" rel="noreferrer noopener">Website ↗</a>}
               <a className={s.ghost} href={profile.url || `https://maps.google.com/?cid=${profile.cid}`} target="_blank" rel="noreferrer noopener">Google Maps ↗</a>

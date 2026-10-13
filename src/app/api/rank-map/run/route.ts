@@ -280,10 +280,25 @@ export async function POST(req: NextRequest) {
           phone: p?.phone,
           website: p?.website,
           url: p?.url,
+          placeTopics: p?.placeTopics ?? {},
         };
       }),
     );
     const youTop = cells.filter((c) => c.rank === 1).map((c) => c.dir);
+
+    // --- Category Gap Analysis ---
+    const yourCategories = new Set([biz.category, ...(biz.additionalCategories || [])].filter(Boolean) as string[]);
+    const compCatCounts = new Map<string, number>();
+    for (const comp of competitors) {
+      const cats = [comp.category, ...(comp.additionalCategories || [])].filter(Boolean) as string[];
+      for (const cat of cats) {
+        compCatCounts.set(cat, (compCatCounts.get(cat) || 0) + 1);
+      }
+    }
+    const missingCategories = [...compCatCounts.entries()]
+      .filter(([cat]) => !yourCategories.has(cat))
+      .sort((a, b) => b[1] - a[1])
+      .map(([category, count]) => ({ category, competitorCount: count }));
 
     return json({
       ...base,
@@ -295,6 +310,10 @@ export async function POST(req: NextRequest) {
       summary: metrics,
       cells,
       hasFullResults: hasFull,
+      categoryAudit: {
+        yourCategories: Array.from(yourCategories),
+        missingCategories,
+      },
       you: {
         wins: youTop.length,
         region: youTop.length ? regionLabel(youTop) : null,
