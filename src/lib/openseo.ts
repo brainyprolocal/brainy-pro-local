@@ -1,4 +1,4 @@
-﻿import 'server-only';
+import 'server-only';
 
 /**
  * OpenSEO MCP client (streamable HTTP, JSON-RPC 2.0). SERVER ONLY.
@@ -13,8 +13,14 @@ const UA = 'rank-map/1.0 (+https://brainyprolocal.com)';
 let rpcId = 1;
 
 function headers(session?: string): Record<string, string> {
-  const key = process.env.OPENSEO_API_KEY;
+  let key = process.env.OPENSEO_API_KEY?.trim() || '';
   if (!key) throw new Error('OPENSEO_API_KEY is not configured');
+  // Strip surrounding quotes if present
+  key = key.replace(/^["']|["']$/g, '').trim();
+  // Strip leading 'Bearer ' if user included it in the env var
+  if (key.toLowerCase().startsWith('bearer ')) {
+    key = key.slice(7).trim();
+  }
   const h: Record<string, string> = {
     Authorization: `Bearer ${key}`,
     'User-Agent': UA,
