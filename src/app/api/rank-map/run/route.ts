@@ -8,6 +8,7 @@ import {
 } from '@/lib/openseo';
 import { cached, kvBackend, DAY } from '@/lib/cache';
 import { deriveChips, getHistory, pushHistory, normalizeKeyword } from '@/lib/keywords';
+import { geocode, inConus } from '@/lib/geocode';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -17,13 +18,19 @@ const NOINDEX = { 'X-Robots-Tag': 'noindex, nofollow, noarchive', 'Cache-Control
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: NOINDEX });
 
 const r4 = (n: number) => Math.round(n * 1e4) / 1e4;
+/** Rank assigned to "not in the pack" when averaging (BrightLocal ATRP convention). */
+const NOT_FOUND = 21;
+const GRID_SIZES = [3, 5, 7];
+const DEFAULT_SPACING: Record<number, number> = { 3: 2, 5: 5, 7: 3 };
+
+type Pt = { latitude: number; longitude: number };
 
 function compass(dLat: number, dLon: number): string {
   const ns = Math.abs(dLat) > 1e-4 ? (dLat > 0 ? 'N' : 'S') : '';
   const ew = Math.abs(dLon) > 1e-4 ? (dLon > 0 ? 'E' : 'W') : '';
   return ns + ew;
 }
-function kmBetween(a: { latitude: number; longitude: number }, b: { latitude: number; longitude: number }) {
+function km(a: Pt, b: Pt) {
   const R = 6371, rad = Math.PI / 180;
   const dLat = (b.latitude - a.latitude) * rad, dLon = (b.longitude - a.longitude) * rad;
   const x = Math.sin(dLat / 2) ** 2 + Math.cos(a.latitude * rad) * Math.cos(b.latitude * rad) * Math.sin(dLon / 2) ** 2;
@@ -33,45 +40,43 @@ const WORD: Record<string, string> = { N: 'north', S: 'south', E: 'east', W: 'we
 
 /** Collapses a set of compass cells into "north/west", "south", "all around", ... */
 function regionLabel(dirs: string[]): string {
+  if (dirs.length && dirs.every((d) => d === '')) return 'at the center';
   const c: Record<string, number> = { N: 0, S: 0, E: 0, W: 0 };
   dirs.forEach((d) => d.split('').forEach((ch) => (c[ch] = (c[ch] || 0) + 1)));
-  if (dirs.length && dirs.every((d) => d === '')) return 'at the storefront';
   const keys = Object.entries(c).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).map(([k]) => k);
   if (keys.length >= 4) return 'all around';
-  return keys.slice(0, 2).map((k) => WORD[k]).join('/');
+  return keys.slice(0, 2).map((k) => WORD[k]).join('/') || 'at the center';
 }
 
 async function profile(cid: string) {
   return (await cached(`rm:prof:${cid}`, () => getBusinessProfile(cid), DAY, (v) => !!v)).value;
 }
 
-function buildStory(biz: Biz, cells: any[], summary: any, comps: any[]): string {
-  const ranked = cells.filter((c) => c.rank);
+function buildStory(biz: Biz, cells: any[], m: any, comps: any[]): string {
   const total = cells.length;
-  const center = cells.find((c) => c.isCenter);
+  const store = cells.find((c) => c.isStore);
   const top3 = cells.filter((c) => c.rank && c.rank <= 3);
   const weak = cells.filter((c) => !c.rank || c.rank > 10);
   const name = biz.title;
   const parts: string[] = [];
-  if (!ranked.length) {
-    return `${name} doesn't show up in the Google Maps pack at any of the ${total} points we checked. Right now, customers searching nearby are being handed to competitors — this is the biggest opportunity on the board.`;
+  if (!cells.some((c) => c.rank)) {
+    return `${name} doesn't show up in the Google Maps pack at any of the ${total} points we checked. Customers searching nearby are being handed to competitors — this is the biggest opportunity on the board.`;
   }
-  if (center?.rank && center.rank <= 3) parts.push(`${name} owns the storefront — #${center.rank} right at its own address.`);
-  else if (center?.rank) parts.push(`Even at its own storefront, ${name} only ranks #${center.rank}.`);
-  else parts.push(`${name} doesn't even appear in the pack at its own storefront.`);
-
+  if (store) {
+    if (store.rank && store.rank <= 3) parts.push(`${name} owns the storefront — #${store.rank} right at its own address.`);
+    else if (store.rank) parts.push(`Even at its own storefront, ${name} only ranks #${store.rank}.`);
+    else parts.push(`${name} doesn't even appear in the pack at its own storefront.`);
+  }
   if (top3.length === total) parts.push(`It holds a top-3 spot at every single point — the whole map is green.`);
-  else if (top3.length >= total * 0.6) parts.push(`It's top-3 across most of the map (${top3.length} of ${total} points).`);
+  else if (top3.length >= total * 0.6) parts.push(`It's top-3 across most of the map (${top3.length} of ${total} points, ${m.solv}% share of local voice).`);
   else if (weak.length >= total * 0.5) {
     const where = regionLabel(weak.map((c) => c.dir).filter(Boolean));
-    parts.push(`But the visibility drops off fast — ${weak.length} of ${total} points are outside the top 10, mostly to the ${where}. It owns the storefront but not the county.`);
+    parts.push(`But visibility drops off fast — ${weak.length} of ${total} points are outside the top 10, mostly to the ${where}.${store?.rank && store.rank <= 3 ? ' It owns the storefront but not the county.' : ''}`);
   } else {
-    parts.push(`Coverage is mixed: ${top3.length} top-3 points, ${summary?.top10Count ?? ranked.length} in the top 10.`);
+    parts.push(`Coverage is mixed: ${top3.length} top-3 points and ${m.top10Count} in the top 10 (${m.solv}% share of local voice).`);
   }
-  if (comps.length) {
-    const lead = comps[0];
-    parts.push(`${lead.title} is the main rival, taking #1 at ${lead.wins} point${lead.wins > 1 ? 's' : ''} (${lead.region}).`);
-  }
+  const lead = comps.find((c) => c.wins > 0);
+  if (lead) parts.push(`${lead.title} is the main rival, taking #1 at ${lead.wins} point${lead.wins > 1 ? 's' : ''} (${lead.region}).`);
   return parts.join(' ');
 }
 
@@ -84,10 +89,11 @@ export async function POST(req: NextRequest) {
   }
   const query = String(body.business || '').trim();
   const cidIn = body.cid ? String(body.cid) : '';
-  const near = body.near;
-  const gridSize: 3 | 5 = body.grid === 3 ? 3 : 5;
-  const spacingKm = gridSize === 5 ? 5 : 2;
+  const gridSize = GRID_SIZES.includes(Number(body.grid)) ? Number(body.grid) : 5;
+  const sp = Number(body.spacingKm);
+  const spacingKm = Number.isFinite(sp) && sp >= 0.5 && sp <= 10 ? sp : DEFAULT_SPACING[gridSize];
   const keyword = body.keyword ? normalizeKeyword(String(body.keyword)) : '';
+  const centerAddress = String(body.centerAddress || '').trim();
 
   if (!query && !cidIn) return json({ error: 'Enter a business name' }, 400);
 
@@ -95,14 +101,23 @@ export async function POST(req: NextRequest) {
     const cacheHits: string[] = [];
     let biz: Biz | null = null;
     let candidates: Biz[] = [];
+    let searchedNear: string | undefined;
 
     if (cidIn) {
       biz = await profile(cidIn);
     } else {
-      if (!near || !Number.isFinite(near.latitude) || !Number.isFinite(near.longitude)) {
-        return json({ error: 'Pick a market to search near' }, 400);
+      // "near" = a typed address/city/ZIP (geocoded) or explicit coordinates from a preset.
+      let near: Pt | null = null;
+      if (body.location) {
+        const g = await geocode(String(body.location));
+        if (!g) return json({ error: `Couldn't locate “${body.location}” in the continental US — try a fuller address, city + state, or ZIP.` }, 400);
+        near = g;
+        searchedNear = g.label;
+      } else if (body.near && inConus(Number(body.near.latitude), Number(body.near.longitude))) {
+        near = { latitude: Number(body.near.latitude), longitude: Number(body.near.longitude) };
       }
-      const n = { latitude: r4(near.latitude), longitude: r4(near.longitude), radiusKm: Number(near.radiusKm) || 50 };
+      if (!near) return json({ error: 'Enter an address, city, or ZIP to search near' }, 400);
+      const n = { latitude: r4(near.latitude), longitude: r4(near.longitude), radiusKm: 50 };
       const k = `rm:search:${query.toLowerCase()}:${n.latitude},${n.longitude},${n.radiusKm}`;
       const s = await cached(k, () => searchLocalBusinesses(query, n), DAY, (v) => v.length > 0);
       if (s.hit) cacheHits.push('lookup');
@@ -111,17 +126,26 @@ export async function POST(req: NextRequest) {
     }
 
     if (!biz || !biz.cid || !Number.isFinite(biz.latitude)) {
-      return json({ notFound: true, query });
+      return json({ notFound: true, query, searchedNear });
     }
 
     const history = await getHistory(biz.cid);
     const chips = deriveChips(biz);
-    const base = { biz, candidates, chips, history, gridSize, spacingKm, cacheBackend: kvBackend() };
+    const base = { biz, candidates, chips, history, gridSize, spacingKm, cacheBackend: kvBackend(), searchedNear };
 
     if (!keyword) return json({ ...base, status: 'resolved', cacheHits });
 
-    const center = { latitude: r4(biz.latitude), longitude: r4(biz.longitude) };
-    const gKey = `rm:grid:${biz.cid}:${keyword}:${center.latitude},${center.longitude}:${gridSize}`;
+    // Grid center: the storefront by default, or any address (service-area / customer location).
+    let centerPt: Pt = { latitude: biz.latitude, longitude: biz.longitude };
+    let centerLabel = 'Storefront';
+    if (centerAddress) {
+      const g = await geocode(centerAddress);
+      if (!g) return json({ ...base, status: 'resolved', error: `Couldn't locate grid center “${centerAddress}”.` }, 400);
+      centerPt = g;
+      centerLabel = g.label;
+    }
+    const center = { latitude: r4(centerPt.latitude), longitude: r4(centerPt.longitude) };
+    const gKey = `rm:grid:${biz.cid}:${keyword}:${center.latitude},${center.longitude}:${gridSize}:${spacingKm}`;
     const g = await cached<GridResult>(
       gKey,
       () => getLocalRankGrid({ keyword, center, cid: biz!.cid, gridSize, spacingKm }),
@@ -140,46 +164,87 @@ export async function POST(req: NextRequest) {
     const lats = [...new Set(raw.map((c) => r4(c.latitude)))].sort((a, b) => b - a);
     const lons = [...new Set(raw.map((c) => r4(c.longitude)))].sort((a, b) => a - b);
     const mid = Math.floor(gridSize / 2);
-    const cells = raw.map((c) => {
+    const storePt = { latitude: biz.latitude, longitude: biz.longitude };
+    // Storefront = cell nearest the business pin, if the pin falls inside the grid.
+    let storeIdx = -1, best = Infinity;
+    raw.forEach((c, i) => {
+      const d = km(storePt, c);
+      if (d < best) { best = d; storeIdx = i; }
+    });
+    if (best > spacingKm * 0.75) storeIdx = -1;
+
+    const cells = raw.map((c, i) => {
       const gr = lats.length === gridSize ? lats.indexOf(r4(c.latitude)) : c.row;
       const gc = lons.length === gridSize ? lons.indexOf(r4(c.longitude)) : c.col;
       const dir = compass(c.latitude - center.latitude, c.longitude - center.longitude);
-      const km = kmBetween(center, c);
       const isCenter = gr === mid && gc === mid;
+      const isStore = i === storeIdx;
       return {
         ...c,
         gr,
         gc,
         dir,
         isCenter,
-        label: isCenter ? 'Storefront' : `${km.toFixed(1)} km ${dir}`,
-        youAreTop: c.topResult?.cid === biz!.cid || c.rank === 1,
+        isStore,
+        label: isStore ? 'Storefront' : isCenter ? 'Center' : `${km(center, c).toFixed(1)} km ${dir}`,
       };
     });
 
-    // Competitors: who holds #1 where this business doesn't.
-    const wins = new Map<string, { title: string; dirs: string[] }>();
+    // --- BrightLocal-style metrics ---
+    const total = cells.length;
+    const found = cells.filter((c) => c.rank);
+    const top3Count = cells.filter((c) => c.rank && c.rank <= 3).length;
+    const top10Count = cells.filter((c) => c.rank && c.rank <= 10).length;
+    const metrics = {
+      pointsSearched: total,
+      pointsFound: found.length,
+      arp: found.length ? +(found.reduce((a, c) => a + c.rank!, 0) / found.length).toFixed(1) : null,
+      atrp: total ? +(cells.reduce((a, c) => a + (c.rank ?? NOT_FOUND), 0) / total).toFixed(1) : null,
+      solv: total ? Math.round((top3Count / total) * 100) : 0,
+      top3Count,
+      top10Count,
+    };
+
+    // --- Competitive field ---
+    // Full per-point results (if OpenSEO returns them) give true avg rank/top-3 per competitor;
+    // otherwise we fall back to #1 spots only.
+    const hasFull = cells.some((c) => c.results?.length);
+    const stats = new Map<string, { title: string; ranks: number[]; winDirs: string[] }>();
+    const touch = (cid: string, title: string) => {
+      const s = stats.get(cid) ?? { title, ranks: [], winDirs: [] };
+      stats.set(cid, s);
+      return s;
+    };
     for (const c of cells) {
+      if (hasFull) {
+        for (const r of c.results ?? []) if (r.cid !== biz.cid) touch(r.cid, r.title).ranks.push(r.rank);
+      }
       const t = c.topResult;
-      if (!t?.cid || t.cid === biz.cid || c.rank === 1) continue;
-      const w = wins.get(t.cid) ?? { title: t.title, dirs: [] };
-      w.dirs.push(c.dir);
-      wins.set(t.cid, w);
+      if (t?.cid && t.cid !== biz.cid && c.rank !== 1) touch(t.cid, t.title).winDirs.push(c.dir);
     }
-    const compList = [...wins.entries()].sort((a, b) => b[1].dirs.length - a[1].dirs.length).slice(0, 6);
-    const competitors = await Promise.all(
-      compList.map(async ([cid, w]) => {
-        let p: Biz | null = null;
-        try {
-          p = await profile(cid);
-        } catch {
-          p = null;
-        }
+    const ranked = [...stats.entries()]
+      .map(([cid, s]) => {
+        const all = hasFull ? [...s.ranks, ...Array(Math.max(0, total - s.ranks.length)).fill(NOT_FOUND)] : [];
         return {
           cid,
-          title: p?.title || w.title,
-          wins: w.dirs.length,
-          region: regionLabel(w.dirs),
+          title: s.title,
+          wins: s.winDirs.length,
+          region: s.winDirs.length ? regionLabel(s.winDirs) : null,
+          top3: hasFull ? s.ranks.filter((r) => r <= 3).length : null,
+          atrp: hasFull ? +(all.reduce((a, r) => a + r, 0) / total).toFixed(1) : null,
+          solv: hasFull ? Math.round((s.ranks.filter((r) => r <= 3).length / total) * 100) : null,
+        };
+      })
+      .sort((a, b) => (hasFull ? (b.top3 ?? 0) - (a.top3 ?? 0) : 0) || b.wins - a.wins)
+      .slice(0, 8);
+
+    const competitors = await Promise.all(
+      ranked.map(async (r) => {
+        let p: Biz | null = null;
+        try { p = await profile(r.cid); } catch { p = null; }
+        return {
+          ...r,
+          title: p?.title || r.title,
           rating: p?.rating,
           reviewCount: p?.reviewCount,
           category: p?.category,
@@ -193,24 +258,25 @@ export async function POST(req: NextRequest) {
     );
     const youTop = cells.filter((c) => c.rank === 1).map((c) => c.dir);
 
-    const summary = g.value.summary ?? {
-      pointsSearched: cells.length,
-      pointsFound: cells.filter((c) => c.rank).length,
-      averageRank: null,
-      top3Count: cells.filter((c) => c.rank && c.rank <= 3).length,
-      top10Count: cells.filter((c) => c.rank && c.rank <= 10).length,
-    };
-
     return json({
       ...base,
       history: newHistory,
       keyword,
       status: 'ready',
-      summary,
+      center: { ...center, label: centerLabel, isStorefront: !centerAddress },
+      storefront: storePt,
+      summary: metrics,
       cells,
-      you: { wins: youTop.length, region: youTop.length ? regionLabel(youTop) : null },
+      hasFullResults: hasFull,
+      you: {
+        wins: youTop.length,
+        region: youTop.length ? regionLabel(youTop) : null,
+        top3: top3Count,
+        atrp: metrics.atrp,
+        solv: metrics.solv,
+      },
       competitors,
-      story: buildStory(biz, cells, summary, competitors),
+      story: buildStory(biz, cells, metrics, competitors),
       cacheHits,
     });
   } catch (e: any) {

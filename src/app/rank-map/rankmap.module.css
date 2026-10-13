@@ -65,3 +65,18 @@
 .modal{max-width:460px;width:92%}
 .video{width:100%;margin-top:14px}
 @media (max-width:900px){.main{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.bubble{width:48px;height:48px;font-size:16px}.h1{font-size:30px}}
+
+.stats{grid-template-columns:repeat(6,1fr)}
+.small{width:46px;height:46px;font-size:16px}
+.table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+.table th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#6f7a9c;font-weight:500;padding:8px 10px;border-bottom:1px solid #1a2036}
+.table td{padding:10px;border-bottom:1px solid #141a2e}
+.table tbody tr:hover{background:rgba(91,124,255,.06)}
+.youRow td{color:#7cf0c5}
+@media (max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media print{
+  .noPrint{display:none!important}
+  .root{position:static;overflow:visible;background:#07090f!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .main{grid-template-columns:1fr}
+  .card{break-inside:avoid}
+}

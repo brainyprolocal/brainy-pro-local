@@ -1,4 +1,4 @@
-import 'server-only';
+﻿import 'server-only';
 
 /**
  * OpenSEO MCP client (streamable HTTP, JSON-RPC 2.0). SERVER ONLY.
@@ -168,6 +168,7 @@ export interface GridCell {
   rank: number | null;
   resultsCount?: number;
   topResult?: { title: string; cid: string } | null;
+  results?: { title: string; cid: string; rank: number }[];
 }
 export interface GridResult {
   status: 'ready' | 'processing';
@@ -185,7 +186,7 @@ export async function getLocalRankGrid(args: {
   keyword: string;
   center: { latitude: number; longitude: number };
   cid: string;
-  gridSize: 3 | 5;
+  gridSize: number;
   spacingKm: number;
 }): Promise<GridResult> {
   const projectId = process.env.OPENSEO_PROJECT_ID;
@@ -208,6 +209,15 @@ export async function getLocalRankGrid(args: {
     rank: typeof c.rank === 'number' && c.rank > 0 ? c.rank : null,
     resultsCount: c.resultsCount,
     topResult: c.topResult ? { title: c.topResult.title, cid: String(c.topResult.cid) } : null,
+    results: Array.isArray(c.results ?? c.topResults ?? c.items)
+      ? (c.results ?? c.topResults ?? c.items)
+          .map((x: any, i: number) => ({
+            title: x.title ?? x.name,
+            cid: String(x.cid ?? ''),
+            rank: Number(x.rank ?? x.position ?? i + 1),
+          }))
+          .filter((x: any) => x.cid)
+      : undefined,
   }));
   return { status: 'ready', summary: sc?.summary, grid };
 }
