@@ -143,7 +143,8 @@ export default function RankMapClient() {
                 <Stars v={biz.rating} />
                 {biz.reviewCount !== undefined && <span className={s.muted}>{biz.reviewCount} reviews</span>}
                 {biz.category && <span className={s.cat}>{biz.category}</span>}
-                {biz.address && <span className={s.muted}>{biz.address}</span>}
+                {biz.isServiceArea && <span className={s.cat} style={{ borderColor: '#7aa8ff', color: '#7aa8ff' }}>Service Area Business</span>}
+                {biz.address ? <span className={s.muted}>{biz.address}</span> : <span className={s.muted}>Address hidden (SAB)</span>}
               </div>
               {data.candidates?.length > 1 && !data.keyword && (
                 <div className={s.row}>

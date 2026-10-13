@@ -103,8 +103,23 @@ export async function POST(req: NextRequest) {
     let candidates: Biz[] = [];
     let searchedNear: string | undefined;
 
-    if (cidIn) {
-      biz = await profile(cidIn);
+    // Check if query is a direct Google CID or Google Maps URL with cid
+    const directCidMatch = query.match(/cid[=:](\d+)/i) || (query.match(/^\d{16,21}$/) ? [null, query] : null);
+    const effectiveCid = cidIn || directCidMatch?.[1] || '';
+
+    if (effectiveCid) {
+      biz = await profile(effectiveCid);
+      if (biz && (!Number.isFinite(biz.latitude) || biz.latitude === 0)) {
+        // For SABs without coordinates, use location from body if available
+        if (body.location) {
+          const g = await geocode(String(body.location));
+          if (g) {
+            biz.latitude = g.latitude;
+            biz.longitude = g.longitude;
+            biz.isServiceArea = true;
+          }
+        }
+      }
     } else {
       // "near" = a typed address/city/ZIP (geocoded) or explicit coordinates from a preset.
       let near: Pt | null = null;
@@ -125,7 +140,7 @@ export async function POST(req: NextRequest) {
       biz = candidates[0] ?? null;
     }
 
-    if (!biz || !biz.cid || !Number.isFinite(biz.latitude)) {
+    if (!biz || !biz.cid || !Number.isFinite(biz.latitude) || biz.latitude === 0) {
       return json({ notFound: true, query, searchedNear });
     }
 
@@ -137,7 +152,7 @@ export async function POST(req: NextRequest) {
 
     // Grid center: the storefront by default, or any address (service-area / customer location).
     let centerPt: Pt = { latitude: biz.latitude, longitude: biz.longitude };
-    let centerLabel = 'Storefront';
+    let centerLabel = biz.isServiceArea ? 'Service Area Center' : 'Storefront';
     if (centerAddress) {
       const g = await geocode(centerAddress);
       if (!g) return json({ ...base, status: 'resolved', error: `Couldn't locate grid center “${centerAddress}”.` }, 400);

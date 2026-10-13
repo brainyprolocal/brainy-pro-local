@@ -118,6 +118,7 @@ export interface Biz {
   phone?: string;
   website?: string;
   url?: string;
+  isServiceArea?: boolean;
 }
 
 const pick = (o: any, ...keys: string[]) => {
@@ -133,12 +134,14 @@ export function normalizeBiz(o: any): Biz {
     pick(o, 'reviewCount', 'review_count', 'reviews_count', 'votes_count') ??
     (typeof rating === 'object' ? pick(rating, 'votes_count', 'count') : undefined);
   const topics = pick(o, 'place_topics', 'placeTopics') ?? {};
+  const lat = Number(pick(o, 'latitude', 'lat'));
+  const lon = Number(pick(o, 'longitude', 'lon', 'lng'));
   return {
     cid: String(pick(o, 'cid', 'CID') ?? ''),
     title: pick(o, 'title', 'name') ?? 'Unknown business',
     address: pick(o, 'address', 'formatted_address'),
-    latitude: Number(pick(o, 'latitude', 'lat')),
-    longitude: Number(pick(o, 'longitude', 'lon', 'lng')),
+    latitude: lat,
+    longitude: lon,
     category: pick(o, 'category', 'primaryCategory'),
     additionalCategories: pick(o, 'additional_categories', 'additionalCategories') ?? [],
     placeTopics: Array.isArray(topics)
@@ -149,6 +152,7 @@ export function normalizeBiz(o: any): Biz {
     phone: pick(o, 'phone'),
     website: pick(o, 'website', 'url'),
     url: pick(o, 'check_url', 'mapsUrl', 'googleMapsUrl'),
+    isServiceArea: !Number.isFinite(lat) || lat === 0,
   };
 }
 
@@ -165,7 +169,16 @@ export async function searchLocalBusinesses(
   const projectId = getProjectId();
   const sc: any = await callTool('search_local_businesses', { projectId, near, query });
   const list = pick(sc, 'businesses', 'results', 'items') ?? (Array.isArray(sc) ? sc : []);
-  return (list as any[]).map(normalizeBiz).filter((b) => b.cid && Number.isFinite(b.latitude));
+  return (list as any[])
+    .map(normalizeBiz)
+    .filter((b) => Boolean(b.cid))
+    .map((b) => {
+      // If SAB has no physical coordinates, fall back to the search area coordinates
+      if (!Number.isFinite(b.latitude) || b.latitude === 0) {
+        return { ...b, latitude: near.latitude, longitude: near.longitude, isServiceArea: true };
+      }
+      return b;
+    });
 }
 
 export async function getBusinessProfile(cid: string): Promise<Biz | null> {
