@@ -197,6 +197,35 @@ export async function getBusinessProfile(cid: string): Promise<Biz | null> {
   return b.cid || o ? { ...b, cid: b.cid || cid } : null;
 }
 
+/**
+ * Live Google Business Profile lookup by exact name near a point. Finds listings that
+ * search_local_businesses' index doesn't have (new or less-established profiles), and is cheaper.
+ */
+export async function getBusinessProfileByName(
+  businessName: string,
+  near: { latitude: number; longitude: number },
+): Promise<Biz | null> {
+  const projectId = getProjectId();
+  let sc: any;
+  try {
+    sc = await callTool('get_business_profile', {
+      projectId,
+      businessName,
+      near: { latitude: near.latitude, longitude: near.longitude, radiusKm: 60 },
+    });
+  } catch {
+    return null; // "not found" comes back as a tool error
+  }
+  const o = pick(sc, 'profile', 'business') ?? sc;
+  if (!o || typeof o !== 'object') return null;
+  const b = normalizeBiz(o);
+  if (!b.cid || b.title === 'Unknown business') return null;
+  if (!Number.isFinite(b.latitude) || b.latitude === 0) {
+    return { ...b, latitude: near.latitude, longitude: near.longitude, isServiceArea: true };
+  }
+  return b;
+}
+
 export interface GridCell {
   row: number;
   col: number;
@@ -224,6 +253,7 @@ export async function getLocalRankGrid(args: {
   keyword: string;
   center: { latitude: number; longitude: number };
   cid: string;
+  name?: string;
   gridSize: 3 | 5;
   spacingKm: number;
 }): Promise<GridResult> {
@@ -232,7 +262,8 @@ export async function getLocalRankGrid(args: {
     projectId,
     keyword: args.keyword,
     center: args.center,
-    target: { cid: args.cid },
+    // cid is the precise match; name is OpenSEO's documented fallback when the cid doesn't match a row.
+    target: args.name ? { cid: args.cid, name: args.name.slice(0, 200) } : { cid: args.cid },
     gridSize: args.gridSize,
     spacingKm: args.spacingKm,
     device: 'mobile',

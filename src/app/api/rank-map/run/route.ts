@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   searchLocalBusinesses,
   getBusinessProfile,
+  getBusinessProfileByName,
   getLocalRankGrid,
   type Biz,
   type GridResult,
@@ -181,6 +182,17 @@ export async function POST(req: NextRequest) {
         const town = searchedNear ? searchedNear.split(',')[0] : String(body.location || '');
         candidates = await search(`${cleanQuery || searchQuery} ${town}`.trim(), 100);
       }
+      // Retry 3: live Google Business Profile lookup by exact name. OpenSEO's search index misses
+      // newer/less-established listings; this checks Google directly (and costs less than a search).
+      if (candidates.length === 0) {
+        const key = `rm:profname:${searchQuery.toLowerCase()}:${n.latitude},${n.longitude}`;
+        const r = await cached(key, () => getBusinessProfileByName(searchQuery, n), DAY, (v) => !!v);
+        if (r.hit) cacheHits.push('lookup');
+        if (r.value) {
+          candidates = [r.value];
+          await cacheSet(`rm:prof:${r.value.cid}`, r.value, DAY); // later keyword runs reuse it free
+        }
+      }
 
       biz = candidates[0] ?? null;
     }
@@ -208,7 +220,7 @@ export async function POST(req: NextRequest) {
     }
     const center = { latitude: r4(centerPt.latitude), longitude: r4(centerPt.longitude) };
     const gKey = `rm:grid:${biz.cid}:${keyword}:${center.latitude},${center.longitude}:${gridSize}:${spacingKm}`;
-    const runGrid = () => getLocalRankGrid({ keyword, center, cid: biz!.cid, gridSize, spacingKm });
+    const runGrid = () => getLocalRankGrid({ keyword, center, cid: biz!.cid, name: biz!.title, gridSize, spacingKm });
     let g: { value: GridResult; hit: boolean };
     if (body.fresh) {
       // Forced rescan: bypass the cached copy, then overwrite it once ready.
