@@ -169,51 +169,63 @@ export async function POST(req: NextRequest) {
       };
 
       // Recently confirmed "not found" for this name + area → answer instantly, spend nothing.
-      const nfKey = `rm:nf:${searchQuery.toLowerCase()}:${n.latitude},${n.longitude}`;
+      const nfKey = `rm:nf2:${searchQuery.toLowerCase()}:${n.latitude},${n.longitude}`;
       if (await cacheGet<boolean>(nfKey)) return json({ notFound: true, query: searchQuery, searchedNear });
 
-      // Stop trying fallbacks before Vercel's 60s function limit.
-      const hasTime = () => Date.now() - reqStart < 40_000;
+      // Hard time budget so we always answer before Vercel's 60s function limit.
+      const BUDGET_MS = 45_000;
+      const remaining = () => BUDGET_MS - (Date.now() - reqStart);
+      const TIMEOUT = Symbol('timeout');
+      let timedOut = false;
+      const withTimeout = async <T,>(p: Promise<T>): Promise<T | null> => {
+        const r = await Promise.race([p, new Promise<typeof TIMEOUT>((res) => setTimeout(() => res(TIMEOUT), Math.max(0, remaining())))]);
+        if (r === TIMEOUT) { timedOut = true; return null; }
+        return r as T;
+      };
 
-      candidates = await search(searchQuery, 50);
+      candidates = (await withTimeout(search(searchQuery, 50))) ?? [];
 
-      // Retry 1: live Google Business Profile lookup by exact name (cheapest; finds listings the index lacks).
-      if (candidates.length === 0 && hasTime()) {
-        const key = `rm:profname:${searchQuery.toLowerCase()}:${n.latitude},${n.longitude}`;
-        const r = await cached(key, () => getBusinessProfileByName(searchQuery, n), DAY, (v) => !!v);
-        if (r.hit) cacheHits.push('lookup');
-        if (r.value) {
-          candidates = [r.value];
-          await cacheSet(`rm:prof:${r.value.cid}`, r.value, DAY); // later keyword runs reuse it free
-        }
-      }
-      // Retry 2: an actual Google Maps search for the name near the location (title must match).
-      if (candidates.length === 0 && hasTime()) {
-        const key = `rm:mapsname:${searchQuery.toLowerCase()}:${n.latitude},${n.longitude}`;
-        const r = await cached(key, () => findViaMapsSearch(searchQuery, n), DAY, (v) => !!v);
-        if (r.hit) cacheHits.push('lookup');
-        if (r.value) {
-          // Prefer the full profile (categories, topics) when available; fall back to the Maps row.
-          let full: Biz | null = null;
-          if (hasTime()) { try { full = await profile(r.value.cid); } catch { full = null; } }
-          const chosen = full && full.title !== 'Unknown business'
-            ? { ...full, latitude: Number.isFinite(full.latitude) && full.latitude !== 0 ? full.latitude : r.value.latitude,
-                longitude: Number.isFinite(full.longitude) && full.longitude !== 0 ? full.longitude : r.value.longitude }
-            : r.value;
+      // Fallbacks run in PARALLEL (the live profile lookup can take 20–30s on its own):
+      //  • live Google Business Profile lookup by exact name
+      //  • a real Google Maps search for the name near the location (title must match)
+      if (candidates.length === 0 && remaining() > 3000) {
+        const kProf = `rm:profname:${searchQuery.toLowerCase()}:${n.latitude},${n.longitude}`;
+        const kMaps = `rm:mapsname:${searchQuery.toLowerCase()}:${n.latitude},${n.longitude}`;
+        const [prof, maps] = await Promise.all([
+          withTimeout(cached(kProf, () => getBusinessProfileByName(searchQuery, n), DAY, (v) => !!v).then((r) => r.value).catch(() => null)),
+          withTimeout(cached(kMaps, () => findViaMapsSearch(searchQuery, n), DAY, (v) => !!v).then((r) => r.value).catch(() => null)),
+        ]);
+        // Prefer the richer profile when both agree; otherwise trust the title-verified Maps match.
+        const found = prof && maps && prof.cid === maps.cid ? prof : maps ?? prof;
+        if (found) {
+          let chosen: Biz = found;
+          if (found === maps && remaining() > 5000) {
+            const full = await withTimeout(profile(found.cid).catch(() => null));
+            if (full && full.title !== 'Unknown business') {
+              chosen = {
+                ...full,
+                latitude: Number.isFinite(full.latitude) && full.latitude !== 0 ? full.latitude : found.latitude,
+                longitude: Number.isFinite(full.longitude) && full.longitude !== 0 ? full.longitude : found.longitude,
+                isServiceArea: full.isServiceArea || found.isServiceArea,
+              };
+            }
+          }
           candidates = [chosen];
+          await cacheSet(`rm:prof:${chosen.cid}`, chosen, DAY); // later keyword runs reuse it free
         }
       }
-      // Retry 3: index search with punctuation / legal suffixes removed, wider radius.
+      // Last try: index search with punctuation / legal suffixes removed, wider radius.
       const cleanQuery = searchQuery
         .replace(/,?\s*\b(llc|l\.l\.c|inc|co|corp|ltd)\b\.?/gi, '')
         .replace(/[^\w\s&]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
-      if (candidates.length === 0 && hasTime() && cleanQuery && cleanQuery.toLowerCase() !== searchQuery.toLowerCase()) {
-        candidates = await search(cleanQuery, 100);
+      if (candidates.length === 0 && remaining() > 3000 && cleanQuery && cleanQuery.toLowerCase() !== searchQuery.toLowerCase()) {
+        candidates = (await withTimeout(search(cleanQuery, 100))) ?? [];
       }
 
-      if (candidates.length === 0) await cacheSet(nfKey, true, 60 * 60);
+      // Only remember "not found" when every step actually finished (not when we ran out of time).
+      if (candidates.length === 0 && !timedOut) await cacheSet(nfKey, true, 60 * 60);
       biz = candidates[0] ?? null;
     }
 
