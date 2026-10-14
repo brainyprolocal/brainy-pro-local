@@ -226,6 +226,46 @@ export async function getBusinessProfileByName(
   return b;
 }
 
+const normName = (s: string) =>
+  s.toLowerCase().replace(/\b(llc|l\.l\.c|inc|co|corp|ltd)\b\.?/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+
+/**
+ * Last resort: a live Google Maps search for the business name near a point (exactly what a person
+ * would do). Only accepts a row whose title matches the name, so it never silently picks a stranger.
+ */
+export async function findViaMapsSearch(
+  businessName: string,
+  near: { latitude: number; longitude: number },
+): Promise<Biz | null> {
+  const projectId = getProjectId();
+  let sc: any;
+  try {
+    sc = await callTool('get_local_serp_results', {
+      projectId,
+      keyword: businessName.slice(0, 120),
+      near: { latitude: near.latitude, longitude: near.longitude, zoom: 10 },
+      searchType: 'maps',
+      device: 'desktop',
+      depth: 20,
+    });
+  } catch {
+    return null;
+  }
+  const rows: any[] = pick(sc, 'results', 'items', 'rows', 'businesses') ?? (Array.isArray(sc) ? sc : []);
+  const want = normName(businessName);
+  const match = rows.find((r) => {
+    const t = normName(String(r?.title ?? r?.name ?? ''));
+    return t && (t === want || t.includes(want) || want.includes(t));
+  });
+  if (!match) return null;
+  const b = normalizeBiz(match);
+  if (!b.cid) return null;
+  if (!Number.isFinite(b.latitude) || b.latitude === 0) {
+    return { ...b, latitude: near.latitude, longitude: near.longitude, isServiceArea: true };
+  }
+  return b;
+}
+
 export interface GridCell {
   row: number;
   col: number;

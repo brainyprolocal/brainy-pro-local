@@ -27,6 +27,17 @@ export async function GET(req: NextRequest) {
     const g = await geocode(near);
     if (!g) return NextResponse.json({ error: `Couldn't geocode ${near}` }, { status: 400, headers: H });
     const projectId = process.env.OPENSEO_PROJECT_ID?.trim() || 'bb80d9a6-61f3-47e4-b118-88bddbd27710';
+    if (req.nextUrl.searchParams.get('mode') === 'maps') {
+      const raw = await callTool('get_local_serp_results', {
+        projectId,
+        keyword: q,
+        near: { latitude: g.latitude, longitude: g.longitude, zoom: 10 },
+        searchType: 'maps',
+        device: 'desktop',
+        depth: 20,
+      });
+      return NextResponse.json({ near: g, raw }, { headers: H });
+    }
     if (req.nextUrl.searchParams.get('mode') === 'profile') {
       const raw = await callTool('get_business_profile', {
         projectId,

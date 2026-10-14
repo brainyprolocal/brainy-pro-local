@@ -3,6 +3,7 @@ import {
   searchLocalBusinesses,
   getBusinessProfile,
   getBusinessProfileByName,
+  findViaMapsSearch,
   getLocalRankGrid,
   type Biz,
   type GridResult,
@@ -191,6 +192,22 @@ export async function POST(req: NextRequest) {
         if (r.value) {
           candidates = [r.value];
           await cacheSet(`rm:prof:${r.value.cid}`, r.value, DAY); // later keyword runs reuse it free
+        }
+      }
+      // Retry 4: an actual Google Maps search for the name near the location (title must match).
+      if (candidates.length === 0) {
+        const key = `rm:mapsname:${searchQuery.toLowerCase()}:${n.latitude},${n.longitude}`;
+        const r = await cached(key, () => findViaMapsSearch(searchQuery, n), DAY, (v) => !!v);
+        if (r.hit) cacheHits.push('lookup');
+        if (r.value) {
+          // Prefer the full profile (categories, topics) when available; fall back to the Maps row.
+          let full: Biz | null = null;
+          try { full = await profile(r.value.cid); } catch { full = null; }
+          const chosen = full && full.title !== 'Unknown business'
+            ? { ...full, latitude: Number.isFinite(full.latitude) && full.latitude !== 0 ? full.latitude : r.value.latitude,
+                longitude: Number.isFinite(full.longitude) && full.longitude !== 0 ? full.longitude : r.value.longitude }
+            : r.value;
+          candidates = [chosen];
         }
       }
 
