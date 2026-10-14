@@ -19,6 +19,10 @@ function categoryToKeyword(cat: string): string {
   return words.join(' ');
 }
 
+/** Google's catch-all categories — never useful as keywords or category recommendations. */
+const GENERIC = new Set(['service establishment', 'establishment', 'point of interest', 'store', 'business', 'local business', 'corporate office']);
+export const isGenericCategory = (cat?: string) => !cat || GENERIC.has(clean(cat));
+
 /** Words that mark a place_topic as review sentiment rather than a searchable service. */
 const SENTIMENT = new Set([
   'staff', 'polite', 'friendly', 'professional', 'professionalism', 'courteous', 'kind', 'nice', 'helpful',
@@ -37,7 +41,7 @@ const isServiceTopic = (t: string) => {
 export function deriveChips(b: Biz, max = 8): string[] {
   const out: string[] = [];
   const add = (s?: string) => {
-    if (!s) return;
+    if (!s || isGenericCategory(s)) return;
     const k = categoryToKeyword(s);
     if (k && k.length > 2 && !out.includes(k)) out.push(k);
   };

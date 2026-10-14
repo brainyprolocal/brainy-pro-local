@@ -8,7 +8,7 @@ import {
   type GridResult,
 } from '@/lib/openseo';
 import { cached, cacheSet, kvBackend, DAY } from '@/lib/cache';
-import { deriveChips, getHistory, pushHistory, normalizeKeyword } from '@/lib/keywords';
+import { deriveChips, getHistory, pushHistory, normalizeKeyword, isGenericCategory } from '@/lib/keywords';
 import { geocode, inConus } from '@/lib/geocode';
 import { looksLikeMapsLink, resolveMapsLink } from '@/lib/mapsLink';
 
@@ -341,10 +341,10 @@ export async function POST(req: NextRequest) {
     const youTop = cells.filter((c) => c.rank === 1).map((c) => c.dir);
 
     // --- Category Gap Analysis ---
-    const yourCategories = new Set([biz.category, ...(biz.additionalCategories || [])].filter(Boolean) as string[]);
+    const yourCategories = new Set([biz.category, ...(biz.additionalCategories || [])].filter((c) => !isGenericCategory(c)) as string[]);
     const compCatCounts = new Map<string, number>();
     for (const comp of competitors) {
-      const cats = [comp.category, ...(comp.additionalCategories || [])].filter(Boolean) as string[];
+      const cats = [comp.category, ...(comp.additionalCategories || [])].filter((c) => !isGenericCategory(c)) as string[];
       for (const cat of cats) {
         compCatCounts.set(cat, (compCatCounts.get(cat) || 0) + 1);
       }

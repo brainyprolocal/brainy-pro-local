@@ -160,7 +160,7 @@ export function normalizeBiz(o: any): Biz {
     phone: pick(o, 'phone'),
     website: pick(o, 'website', 'url'),
     url: pick(o, 'check_url', 'mapsUrl', 'googleMapsUrl'),
-    isServiceArea: !Number.isFinite(lat) || lat === 0,
+    isServiceArea: !Number.isFinite(lat) || lat === 0 || !pick(o, 'address', 'formatted_address'),
   };
 }
 
