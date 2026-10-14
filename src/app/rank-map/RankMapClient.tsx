@@ -13,7 +13,7 @@ const QUICK = [
   'Salisbury, MD', 'Hagerstown, MD', 'Washington, DC', 'Arlington, VA', 'Fairfax, VA', 'Ashburn, VA', 'Manassas, VA',
 ];
 const SPACINGS = [0.5, 1, 2, 3, 5, 8];
-const DEFAULT_SPACING: Record<number, number> = { 3: 2, 5: 5, 7: 3 };
+const DEFAULT_SPACING: Record<number, number> = { 3: 2, 5: 5 };
 
 type Data = any;
 
@@ -204,7 +204,7 @@ export default function RankMapClient() {
           <p className={s.sub}>
             {ready
               ? <>Google Maps 3-Pack rankings for “<strong style={{ color: '#fff' }}>{data.keyword}</strong>” · mobile · {size}×{size} grid @ {data.spacingKm} km · centered on {data.center.label}</>
-              : 'Street-by-street Google Maps pack rankings around the storefront.'}
+              : 'Street-by-street Google Maps pack rankings around any local business.'}
           </p>
         </div>
 
@@ -252,7 +252,7 @@ export default function RankMapClient() {
                 </select>
                 <span className={s.muted}>covers ~{((grid - 1) * spacing).toFixed(1)} km across · {grid * grid} points</span>
                 <input className={s.input} style={{ maxWidth: 320, padding: '8px 12px', fontSize: 13 }} value={centerAddress}
-                  onChange={(e) => setCenterAddress(e.target.value)} placeholder="Center on address (optional — default: storefront)" />
+                  onChange={(e) => setCenterAddress(e.target.value)} placeholder="Center grid on… (optional — default: the business's Google pin)" />
                 {settingsChanged && <button className={s.ghost} onClick={() => runKeyword(data.keyword)}>Re-run scan ↻</button>}
               </div>
 

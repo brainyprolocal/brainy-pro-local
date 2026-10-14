@@ -26,7 +26,7 @@ function safeEqual(a: string, b: string) {
   return r === 0;
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const user = process.env.RANKMAP_USER;
   const pass = process.env.RANKMAP_PASS;
   if (!user || !pass) return unauthorized();

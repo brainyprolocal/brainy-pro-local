@@ -23,7 +23,6 @@ const json = (body: unknown, status = 200) => NextResponse.json(body, { status, 
 const r4 = (n: number) => Math.round(n * 1e4) / 1e4;
 /** Rank assigned to "not in the pack" when averaging (BrightLocal ATRP convention). */
 const NOT_FOUND = 21;
-const GRID_SIZES = [3, 5];
 const DEFAULT_SPACING: Record<number, number> = { 3: 2, 5: 5 };
 
 type Pt = { latitude: number; longitude: number };
