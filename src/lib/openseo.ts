@@ -100,6 +100,16 @@ export async function callTool<T = any>(name: string, args: Record<string, unkno
   return result.structuredContent as T;
 }
 
+/** Lists the MCP tools OpenSEO exposes (name, description, input schema). Diagnostics only. */
+export async function listTools(): Promise<any[]> {
+  const session = await handshake();
+  const id = rpcId++;
+  const res = await post({ jsonrpc: '2.0', id, method: 'tools/list', params: {} }, session);
+  const msg = await readRpc(res, id);
+  if (msg?.error) throw new Error(`OpenSEO tools/list: ${msg.error.message}`);
+  return msg?.result?.tools ?? [];
+}
+
 // ---------- Typed helpers ----------
 
 export interface Biz {

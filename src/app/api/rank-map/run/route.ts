@@ -115,14 +115,16 @@ export async function POST(req: NextRequest) {
     // Exact lookups: a pasted Google Maps link, "cid=…", or a raw CID number.
     let linkPin: Pt | null = null;
     let linkCid = '';
+    let searchQuery = query;
     if (!cidIn && looksLikeMapsLink(query)) {
       const info = await resolveMapsLink(query);
-      if (!info.cid) {
+      if (info.cid) linkCid = info.cid;
+      else if (info.name) searchQuery = info.name; // share.google links resolve to the exact Google business name
+      else {
         return json({
           error: "Couldn't read that Google Maps link. Open the business on Google Maps, tap Share → Copy link, and paste that link here.",
         }, 400);
       }
-      linkCid = info.cid;
       if (Number.isFinite(info.latitude) && Number.isFinite(info.longitude)) {
         linkPin = { latitude: info.latitude!, longitude: info.longitude! };
       }
@@ -163,28 +165,28 @@ export async function POST(req: NextRequest) {
         return r.value.slice(0, 5);
       };
 
-      candidates = await search(query, 50);
+      candidates = await search(searchQuery, 50);
 
       // Retry 1: same name without punctuation / legal suffixes ("Griff's Services, LLC" → "griffs services"), wider radius.
-      const cleanQuery = query
+      const cleanQuery = searchQuery
         .replace(/,?\s*\b(llc|l\.l\.c|inc|co|corp|ltd)\b\.?/gi, '')
         .replace(/[^\w\s&]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
-      if (candidates.length === 0 && cleanQuery && cleanQuery.toLowerCase() !== query.toLowerCase()) {
+      if (candidates.length === 0 && cleanQuery && cleanQuery.toLowerCase() !== searchQuery.toLowerCase()) {
         candidates = await search(cleanQuery, 100);
       }
       // Retry 2: name + town (helps service-area businesses registered outside the search radius).
       if (candidates.length === 0) {
         const town = searchedNear ? searchedNear.split(',')[0] : String(body.location || '');
-        candidates = await search(`${cleanQuery || query} ${town}`.trim(), 100);
+        candidates = await search(`${cleanQuery || searchQuery} ${town}`.trim(), 100);
       }
 
       biz = candidates[0] ?? null;
     }
 
     if (!biz || !biz.cid || !Number.isFinite(biz.latitude) || biz.latitude === 0) {
-      return json({ notFound: true, query, searchedNear });
+      return json({ notFound: true, query: searchQuery, searchedNear });
     }
 
     const history = await getHistory(biz.cid);

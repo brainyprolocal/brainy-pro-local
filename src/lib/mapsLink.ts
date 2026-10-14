@@ -9,13 +9,15 @@ export interface MapsLinkInfo {
   cid?: string;
   latitude?: number;
   longitude?: number;
+  /** Exact Google business name (share.google links redirect to a search for it). */
+  name?: string;
 }
 
 const BROWSER_UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
 
 export const looksLikeMapsLink = (q: string) =>
-  /(google\.[a-z.]+\/maps|maps\.google\.|maps\.app\.goo\.gl|goo\.gl\/maps|g\.co\/kgs)/i.test(q);
+  /(google\.[a-z.]+\/maps|maps\.google\.|maps\.app\.goo\.gl|goo\.gl\/maps|g\.co\/kgs|share\.google)/i.test(q);
 
 function parse(url: string): MapsLinkInfo {
   let u = url;
@@ -29,15 +31,29 @@ function parse(url: string): MapsLinkInfo {
   }
   // Prefer the exact pin (!3d lat !4d lng) over the viewport center (@lat,lng).
   const pin = u.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/) || u.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  // Business name: /maps/place/<Name>/ or a search URL's q= (share.google → google.com/search?q=Name&kgmid=…).
+  let name: string | undefined;
+  const place = url.match(/\/maps\/place\/([^/@?]+)/);
+  if (place) name = place[1];
+  else {
+    try {
+      const parsed = new URL(url);
+      if (/google\./.test(parsed.hostname) && parsed.searchParams.get('kgmid')) name = parsed.searchParams.get('q') || undefined;
+    } catch { /* ignore */ }
+  }
+  if (name) {
+    try { name = decodeURIComponent(name.replace(/\+/g, ' ')).trim(); } catch { name = name.replace(/\+/g, ' ').trim(); }
+  }
   return {
     cid,
     latitude: pin ? Number(pin[1]) : undefined,
     longitude: pin ? Number(pin[2]) : undefined,
+    name: name || undefined,
   };
 }
 
 export async function resolveMapsLink(input: string): Promise<MapsLinkInfo> {
-  const m = input.match(/https?:\/\/\S+/i) || input.match(/\S*(?:maps\.app\.goo\.gl|goo\.gl\/maps|google\.[a-z.]+\/maps)\S*/i);
+  const m = input.match(/https?:\/\/\S+/i) || input.match(/\S*(?:maps\.app\.goo\.gl|goo\.gl\/maps|google\.[a-z.]+\/maps|share\.google)\S*/i);
   if (!m) return {};
   let url = m[0].startsWith('http') ? m[0] : `https://${m[0]}`;
 
