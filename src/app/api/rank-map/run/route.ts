@@ -6,7 +6,7 @@ import {
   type Biz,
   type GridResult,
 } from '@/lib/openseo';
-import { cached, kvBackend, DAY } from '@/lib/cache';
+import { cached, cacheSet, kvBackend, DAY } from '@/lib/cache';
 import { deriveChips, getHistory, pushHistory, normalizeKeyword } from '@/lib/keywords';
 import { geocode, inConus } from '@/lib/geocode';
 
@@ -50,6 +50,14 @@ function regionLabel(dirs: string[]): string {
 
 async function profile(cid: string) {
   return (await cached(`rm:prof:${cid}`, () => getBusinessProfile(cid), DAY, (v) => !!v)).value;
+}
+
+/** Town name from "9520 Berger Rd, Columbia, MD 21046, USA" → "Columbia"; falls back to the search location. */
+function cityOf(biz: Biz, fallback?: string): string {
+  const parts = (biz.address || '').split(',').map((p) => p.trim()).filter(Boolean);
+  if (/^(usa|us|united states)$/i.test(parts[parts.length - 1] || '')) parts.pop();
+  const city = parts.length >= 2 ? parts[parts.length - 2] : (fallback || '').split(',')[0].trim();
+  return /\d/.test(city) ? '' : city.toLowerCase();
 }
 
 function buildStory(biz: Biz, cells: any[], m: any, comps: any[]): string {
@@ -158,6 +166,8 @@ export async function POST(req: NextRequest) {
 
     const history = await getHistory(biz.cid);
     const chips = deriveChips(biz);
+    const town = cityOf(biz, searchedNear || body.location);
+    if (chips[0] && town && !chips[0].includes(town)) chips.splice(1, 0, `${chips[0]} ${town}`);
     const base = { biz, candidates, chips, history, gridSize, spacingKm, cacheBackend: kvBackend(), searchedNear };
 
     if (!keyword) return json({ ...base, status: 'resolved', cacheHits });
@@ -173,12 +183,16 @@ export async function POST(req: NextRequest) {
     }
     const center = { latitude: r4(centerPt.latitude), longitude: r4(centerPt.longitude) };
     const gKey = `rm:grid:${biz.cid}:${keyword}:${center.latitude},${center.longitude}:${gridSize}:${spacingKm}`;
-    const g = await cached<GridResult>(
-      gKey,
-      () => getLocalRankGrid({ keyword, center, cid: biz!.cid, gridSize, spacingKm }),
-      DAY,
-      (v) => v.status === 'ready',
-    );
+    const runGrid = () => getLocalRankGrid({ keyword, center, cid: biz!.cid, gridSize, spacingKm });
+    let g: { value: GridResult; hit: boolean };
+    if (body.fresh) {
+      // Forced rescan: bypass the cached copy, then overwrite it once ready.
+      const value = await runGrid();
+      if (value.status === 'ready') await cacheSet(gKey, value, DAY);
+      g = { value, hit: false };
+    } else {
+      g = await cached<GridResult>(gKey, runGrid, DAY, (v) => v.status === 'ready');
+    }
     if (g.hit) cacheHits.push('grid');
     if (g.value.status === 'processing') {
       return json({ ...base, keyword, status: 'processing', retryAfterSec: 60, cacheHits });
@@ -310,6 +324,7 @@ export async function POST(req: NextRequest) {
       status: 'ready',
       center: { ...center, label: centerLabel, isStorefront: !centerAddress },
       storefront: storePt,
+      scannedAt: g.value.scannedAt,
       summary: metrics,
       cells,
       hasFullResults: hasFull,

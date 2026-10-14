@@ -207,6 +207,7 @@ export interface GridResult {
     top10Count: number;
   };
   grid: GridCell[];
+  scannedAt?: string;
 }
 
 export async function getLocalRankGrid(args: {
@@ -245,5 +246,5 @@ export async function getLocalRankGrid(args: {
           .filter((x: any) => x.cid)
       : undefined,
   }));
-  return { status: 'ready', summary: sc?.summary, grid };
+  return { status: 'ready', summary: sc?.summary, grid, scannedAt: new Date().toISOString() };
 }

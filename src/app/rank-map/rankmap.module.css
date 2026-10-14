@@ -90,11 +90,33 @@
 .table tbody tr:hover{background:rgba(91,124,255,.06)}
 .youRow td{color:#7cf0c5}
 @media (max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+.linkBtn{background:none;border:0;color:#7cf0c5;cursor:pointer;font-size:12px;margin-left:10px;padding:0;text-decoration:underline;text-transform:none;letter-spacing:0;font-weight:600}
+.linkBtn:hover{color:#a8ffd9}
+.printOnly{display:none}
+.printCover{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:12px;margin-bottom:18px;border-bottom:2px solid #1d4781}
+.printLogo{height:38px;width:auto}
+.printMeta{text-align:right;font-size:12px;line-height:1.6}
+
+/* ---------- Light, ink-friendly PDF / print theme ---------- */
 @media print{
+  @page{margin:12mm}
   .noPrint{display:none!important}
-  :global(.leaflet-control-attribution){display:none!important}
-  :global(.leaflet-control-zoom){display:none!important}
-  .root{position:static;overflow:visible;background:#07090f!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .printOnly{display:block!important}
+  :global(.leaflet-control-attribution),:global(.leaflet-control-zoom){display:none!important}
+  .root{position:static;overflow:visible;background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* Flatten every dark-theme text color (including inline styles) to ink, then re-apply accents. */
+  .root *:not(.h1Highlight){color:#0f172a!important;text-shadow:none!important}
+  .root .storyk{color:#1d4781!important}
+  .root .muted,.root .sub,.root .statl,.root .label,.root .town{color:#475569!important}
+  .wrap{padding:0;max-width:none}
+  .card{background:#fff!important;border:1px solid #e2e8f0!important;box-shadow:none!important;break-inside:avoid}
   .main{grid-template-columns:1fr}
-  .card{break-inside:avoid}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .h1{font-size:30px}
+  .h1Highlight{filter:none;animation:none;background:linear-gradient(110deg,#059669,#0891b2,#4f46e5);-webkit-background-clip:text;background-clip:text}
+  .table th,.table td{border-color:#e2e8f0!important}
+  .n{background:#e2e8f0!important;border-color:#cbd5e1!important}
+  .comp{background:#fff!important;border-color:#e2e8f0!important}
+  .you{background:#ecfdf5!important;border-color:#10b981!important}
+  .cat{background:#f8fafc!important}
 }

@@ -57,7 +57,6 @@ export default function RankMapClient() {
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState<{ q: string; near?: string } | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
-  const [videoStub, setVideoStub] = useState(false);
   const retry = useRef<ReturnType<typeof setTimeout> | null>(null);
   const seq = useRef(0);
   const MAX_POLLS = 10; // ~10 minutes of "processing" before we give up
@@ -113,11 +112,11 @@ export default function RankMapClient() {
     call({ business: query.trim(), location: location.trim() }, 'Finding that business on Google…');
   }
 
-  function runKeyword(kw: string) {
+  function runKeyword(kw: string, fresh = false) {
     if (!data?.biz || !kw.trim()) return;
     call(
-      { business: data.biz.title, cid: data.biz.cid, location: location.trim(), keyword: kw.trim(), grid, spacingKm: spacing, centerAddress: centerAddress.trim() },
-      `Mapping “${kw.trim()}” across ${grid * grid} points…`,
+      { business: data.biz.title, cid: data.biz.cid, location: location.trim(), keyword: kw.trim(), grid, spacingKm: spacing, centerAddress: centerAddress.trim(), fresh },
+      fresh ? `Running a fresh scan of “${kw.trim()}”…` : `Mapping “${kw.trim()}” across ${grid * grid} points…`,
     );
   }
 
@@ -156,12 +155,31 @@ export default function RankMapClient() {
               <span>Main Website</span>
               <span style={{ fontSize: 11 }}>↗</span>
             </Link>
+            {data?.cacheBackend && (
+              <div className={s.privateBadge} title={data.cacheBackend === 'redis'
+                ? 'Scans are saved for 24h — repeat views are free.'
+                : 'No Upstash/KV connected — repeat views may cost credits and keyword history may reset.'}>
+                <span className={s.beacon} style={data.cacheBackend === 'redis' ? undefined : { background: '#f0a623', boxShadow: '0 0 8px #f0a623' }} />
+                <span>Cache {data.cacheBackend === 'redis' ? 'on' : 'off'}</span>
+              </div>
+            )}
             <div className={s.privateBadge}>
               <span className={s.beacon} />
               <span>Agency Internal</span>
             </div>
           </div>
         </header>
+
+        {/* Print-only cover line */}
+        <div className={s.printOnly}>
+          <div className={s.printCover}>
+            <img src="/brand/logo-full-blue.svg" alt="brainy pro" className={s.printLogo} />
+            <div className={s.printMeta}>
+              <div>Local Visibility Report{biz?.title ? <> · Prepared for <b>{biz.title}</b></> : null}</div>
+              <div>Prepared by BrainyPro · {new Date(data?.scannedAt || Date.now()).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+            </div>
+          </div>
+        </div>
 
         <div className={s.heroSection}>
           <div className={`${s.eyebrow} ${s.noPrint}`}>
@@ -283,7 +301,12 @@ export default function RankMapClient() {
                 <div className={s.row} style={{ marginTop: 0, justifyContent: 'space-between' }}>
                   <div className={s.storyk} style={{ margin: 0 }}>
                     “{data.keyword}” · {size}×{size} @ {data.spacingKm} km
-                    {data.cacheHits?.includes('grid') && <span className={s.muted}> · cached (no credits)</span>}
+                    {data.scannedAt && <span className={s.muted}> · scanned {new Date(data.scannedAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>}
+                    {data.cacheHits?.includes('grid') && <span className={`${s.muted} ${s.noPrint}`}> · cached (no credits)</span>}
+                    {data.cacheHits?.includes('grid') && (
+                      <button type="button" className={`${s.linkBtn} ${s.noPrint}`} onClick={() => runKeyword(data.keyword, true)}
+                        title="Run a brand-new scan now (uses credits)">↻ Rescan now</button>
+                    )}
                   </div>
                   <div className={`${s.toggle} ${s.noPrint}`}>
                     <button type="button" className={view === 'map' ? s.on : ''} onClick={() => setView('map')}>Map</button>
@@ -296,10 +319,10 @@ export default function RankMapClient() {
                 ) : (
                   <div style={{ position: 'relative' }}>
                     <div className={s.compass}><span style={{ top: 3, color: '#fff' }}>N</span><span style={{ right: 5 }}>E</span><span style={{ bottom: 3 }}>S</span><span style={{ left: 5 }}>W</span></div>
-                    <div className={s.grid} style={{ gridTemplateColumns: `repeat(${size}, 1fr)`, maxWidth: size === 7 ? 620 : 560 }}>
+                    <div className={s.grid} style={{ gridTemplateColumns: `repeat(${size}, 1fr)`, maxWidth: 560 }}>
                       {sorted.map((c: any) => (
                         <div key={`${c.gr}-${c.gc}`} className={s.cell} title={c.topResult ? `#1 here: ${c.topResult.title}` : undefined}>
-                          <div className={`${s.bubble} ${tone(c.rank)} ${size === 7 ? s.small : ''}`}>
+                          <div className={`${s.bubble} ${tone(c.rank)}`}>
                             {c.rank ?? '–'}
                             {c.isStore && <span className={s.star}>★</span>}
                           </div>
@@ -314,7 +337,7 @@ export default function RankMapClient() {
                   <span><i className={`${s.dot} ${s.a}`} />4–10</span>
                   <span><i className={`${s.dot} ${s.r}`} />11+</span>
                   <span><i className={`${s.dot} ${s.n}`} />Not ranked</span>
-                  <span><span style={{ color: '#ffcf5c' }}>★</span> Storefront</span>
+                  {data.storefront && <span><span style={{ color: '#ffcf5c' }}>★</span> Storefront</span>}
                 </div>
               </div>
 
@@ -324,7 +347,6 @@ export default function RankMapClient() {
                   <p className={s.story} style={{ margin: 0 }}>{data.story}</p>
                   <div className={`${s.row} ${s.noPrint}`}>
                     <button className={s.ghost} onClick={() => window.print()}>⤓ Client report (PDF)</button>
-                    <button className={s.ghost} onClick={() => setVideoStub(true)}>● Save a client walkthrough video</button>
                   </div>
                 </div>
 
@@ -521,6 +543,18 @@ export default function RankMapClient() {
                 💡 <b>Strategy:</b> Securing 2–3 hyper-local links from organizations physically based in your red and yellow grid zones is the single most effective way to expand your top-3 ranking radius outward.
               </div>
             </div>
+
+            {/* Print-only closing section */}
+            <div className={`${s.printOnly} ${s.card}`} style={{ marginTop: 18 }}>
+              <div className={s.storyk}>Next steps with BrainyPro</div>
+              <p className={s.story} style={{ margin: '0 0 8px' }}>
+                Want to turn the amber and red zones on this map green? We&apos;ll walk you through a prioritized plan —
+                categories, reviews, and local links — built around the gaps in this report.
+              </p>
+              <p style={{ margin: 0, fontSize: 14 }}>
+                <b>hello@brainyprolocal.com</b> · brainyprolocal.com
+              </p>
+            </div>
           </>
         )}
       </div>
@@ -553,16 +587,6 @@ export default function RankMapClient() {
               <a className={s.ghost} href={profile.url || `https://maps.google.com/?cid=${profile.cid}`} target="_blank" rel="noreferrer noopener">Google Maps ↗</a>
               <button className={s.ghost} onClick={() => setProfile(null)}>Close</button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {videoStub && (
-        <div className={s.modalBg} onClick={() => setVideoStub(false)}>
-          <div className={`${s.card} ${s.modal}`} onClick={(e) => e.stopPropagation()}>
-            <div className={s.storyk}>Client walkthrough video</div>
-            <p className={s.story}>Recording is coming in a later version. For now, screen-record this page while you walk the client through the story.</p>
-            <button className={s.ghost} onClick={() => setVideoStub(false)}>Got it</button>
           </div>
         </div>
       )}
