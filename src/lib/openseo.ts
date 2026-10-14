@@ -57,9 +57,7 @@ async function post(body: unknown, session?: string): Promise<Response> {
   });
   if (!res.ok && res.status !== 202) {
     const t = await res.text().catch(() => '');
-    const key = process.env.OPENSEO_API_KEY?.trim() || '';
-    const preview = key.length > 6 ? `${key.slice(0, 3)}...${key.slice(-3)} (len ${key.length})` : `(len ${key.length})`;
-    throw new Error(`OpenSEO HTTP ${res.status} [key: ${preview}]: ${t.slice(0, 200)}`);
+    throw new Error(`OpenSEO HTTP ${res.status}: ${t.slice(0, 200)}`);
   }
   return res;
 }

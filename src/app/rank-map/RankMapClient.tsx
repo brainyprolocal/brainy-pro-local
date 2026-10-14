@@ -19,11 +19,12 @@ type Data = any;
 
 function getDisplayArea(biz: any, searchedNear?: string): string {
   if (biz?.address) {
-    const parts = biz.address.split(',');
+    const parts = biz.address.split(',').map((p: string) => p.trim()).filter(Boolean);
+    if (/^(usa|us|united states)$/i.test(parts[parts.length - 1] || '')) parts.pop();
     if (parts.length >= 2) {
-      const city = parts[parts.length - 2].trim();
-      const stateZip = parts[parts.length - 1].trim().split(' ')[0];
-      return `${city}, ${stateZip}`;
+      const city = parts[parts.length - 2];
+      const state = parts[parts.length - 1].split(' ')[0];
+      return `${city}, ${state}`;
     }
   }
   if (searchedNear) return searchedNear.split(',')[0].trim();
@@ -58,11 +59,14 @@ export default function RankMapClient() {
   const [profile, setProfile] = useState<any | null>(null);
   const [videoStub, setVideoStub] = useState(false);
   const retry = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const seq = useRef(0);
+  const MAX_POLLS = 10; // ~10 minutes of "processing" before we give up
 
   useEffect(() => () => { if (retry.current) clearTimeout(retry.current); }, []);
 
-  async function call(payload: any, msg: string) {
+  async function call(payload: any, msg: string, attempt = 0) {
     if (retry.current) clearTimeout(retry.current);
+    const mine = ++seq.current; // only the latest request may update the screen
     setLoading(msg);
     setError(null);
     setNotFound(null);
@@ -73,6 +77,7 @@ export default function RankMapClient() {
         body: JSON.stringify(payload),
       });
       const j = await res.json();
+      if (mine !== seq.current) return;
       if (!res.ok) throw new Error(j.error || `Request failed (${res.status})`);
       if (j.notFound) {
         setNotFound({ q: j.query, near: j.searchedNear });
@@ -82,13 +87,19 @@ export default function RankMapClient() {
       }
       setData(j);
       if (j.status === 'processing') {
+        if (attempt >= MAX_POLLS) {
+          setLoading(null);
+          setError('Google is taking unusually long to scan this grid. Try the same keyword again in a few minutes — it will not cost extra credits.');
+          return;
+        }
         const pts = (payload.grid || 5) ** 2;
         setLoading(`Google is being scanned at ${pts} points… checking back in ~60s (no extra credits).`);
-        retry.current = setTimeout(() => call(payload, 'Collecting grid results…'), (j.retryAfterSec || 60) * 1000);
+        retry.current = setTimeout(() => call(payload, 'Collecting grid results…', attempt + 1), (j.retryAfterSec || 60) * 1000);
         return;
       }
       setLoading(null);
     } catch (e: any) {
+      if (mine !== seq.current) return;
       setError(e.message);
       setLoading(null);
     }
@@ -105,7 +116,7 @@ export default function RankMapClient() {
   function runKeyword(kw: string) {
     if (!data?.biz || !kw.trim()) return;
     call(
-      { business: data.biz.title, cid: data.biz.cid, keyword: kw.trim(), grid, spacingKm: spacing, centerAddress: centerAddress.trim() },
+      { business: data.biz.title, cid: data.biz.cid, location: location.trim(), keyword: kw.trim(), grid, spacingKm: spacing, centerAddress: centerAddress.trim() },
       `Mapping “${kw.trim()}” across ${grid * grid} points…`,
     );
   }
@@ -193,7 +204,7 @@ export default function RankMapClient() {
                   <span className={s.label}>Not it?</span>
                   {data.candidates.slice(1).map((c: any) => (
                     <button key={c.cid} className={s.chip}
-                      onClick={() => call({ business: c.title, cid: c.cid }, 'Loading profile…')}>
+                      onClick={() => call({ business: c.title, cid: c.cid, location: location.trim() }, 'Loading profile…')}>
                       {c.title}
                     </button>
                   ))}

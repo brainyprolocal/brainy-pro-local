@@ -6,9 +6,10 @@ import 'leaflet/dist/leaflet.css';
 type Cell = { latitude: number; longitude: number; rank: number | null; label: string; isStore: boolean; isCenter: boolean; topResult?: { title: string } | null };
 
 const color = (r: number | null) => (!r ? '#3a4260' : r <= 3 ? '#22c58b' : r <= 10 ? '#f0a623' : '#e5484d');
+const esc = (s: string) => s.replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!);
 
-/** Dark CARTO basemap (free, OSM data) with rank bubbles at each grid point. */
-export default function RankMapLeaflet({ cells, storefront }: { cells: Cell[]; storefront: { latitude: number; longitude: number } }) {
+/** Esri dark-gray basemap (free, no key) with rank bubbles at each grid point. */
+export default function RankMapLeaflet({ cells, storefront }: { cells: Cell[]; storefront: { latitude: number; longitude: number } | null }) {
   const el = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,17 +34,19 @@ export default function RankMapLeaflet({ cells, storefront }: { cells: Cell[]; s
         L.marker([c.latitude, c.longitude], {
           icon: L.divIcon({ html, className: '', iconSize: [34, 34], iconAnchor: [17, 17] }),
         })
-          .bindTooltip(`${c.label}<br/>${c.rank ? `Rank #${c.rank}` : 'Not in pack'}${c.topResult ? `<br/>#1: ${c.topResult.title}` : ''}`)
+          .bindTooltip(`${esc(c.label)}<br/>${c.rank ? `Rank #${c.rank}` : 'Not in pack'}${c.topResult ? `<br/>#1: ${esc(c.topResult.title || '')}` : ''}`)
           .addTo(map);
         bounds.extend([c.latitude, c.longitude]);
       }
-      const star = `<div style="color:#ffcf5c;font-size:22px;text-shadow:0 0 8px #000">★</div>`;
-      L.marker([storefront.latitude, storefront.longitude], {
-        icon: L.divIcon({ html: star, className: '', iconSize: [22, 22], iconAnchor: [11, 30] }),
-        zIndexOffset: 1000,
-      })
-        .bindTooltip('Storefront (Google pin)')
-        .addTo(map);
+      if (storefront) {
+        const star = `<div style="color:#ffcf5c;font-size:22px;text-shadow:0 0 8px #000">★</div>`;
+        L.marker([storefront.latitude, storefront.longitude], {
+          icon: L.divIcon({ html: star, className: '', iconSize: [22, 22], iconAnchor: [11, 30] }),
+          zIndexOffset: 1000,
+        })
+          .bindTooltip('Storefront (Google pin)')
+          .addTo(map);
+      }
       map.fitBounds(bounds.pad(0.12));
     })();
     return () => {

@@ -191,14 +191,17 @@ export async function POST(req: NextRequest) {
     const lats = [...new Set(raw.map((c) => r4(c.latitude)))].sort((a, b) => b - a);
     const lons = [...new Set(raw.map((c) => r4(c.longitude)))].sort((a, b) => a - b);
     const mid = Math.floor(gridSize / 2);
-    const storePt = { latitude: biz.latitude, longitude: biz.longitude };
-    // Storefront = cell nearest the business pin, if the pin falls inside the grid.
+    const storePt = biz.isServiceArea ? null : { latitude: biz.latitude, longitude: biz.longitude };
+    // Storefront = cell nearest the business pin, if the pin falls inside the grid (never for SABs —
+    // their "location" is just the search-area fallback, not a real address).
     let storeIdx = -1, best = Infinity;
-    raw.forEach((c, i) => {
-      const d = km(storePt, c);
-      if (d < best) { best = d; storeIdx = i; }
-    });
-    if (best > spacingKm * 0.75) storeIdx = -1;
+    if (storePt) {
+      raw.forEach((c, i) => {
+        const d = km(storePt, c);
+        if (d < best) { best = d; storeIdx = i; }
+      });
+      if (best > spacingKm * 0.75) storeIdx = -1;
+    }
 
     const cells = raw.map((c, i) => {
       const gr = lats.length === gridSize ? lats.indexOf(r4(c.latitude)) : c.row;
