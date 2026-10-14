@@ -8,7 +8,7 @@ import {
   type Biz,
   type GridResult,
 } from '@/lib/openseo';
-import { cached, cacheSet, kvBackend, DAY } from '@/lib/cache';
+import { cached, cacheGet, cacheSet, kvBackend, DAY } from '@/lib/cache';
 import { deriveChips, getHistory, pushHistory, normalizeKeyword, isGenericCategory } from '@/lib/keywords';
 import { geocode, inConus } from '@/lib/geocode';
 import { looksLikeMapsLink, resolveMapsLink } from '@/lib/mapsLink';
@@ -92,6 +92,7 @@ function buildStory(biz: Biz, cells: any[], m: any, comps: any[]): string {
 }
 
 export async function POST(req: NextRequest) {
+  const reqStart = Date.now();
   let body: any;
   try {
     body = await req.json();
@@ -167,25 +168,17 @@ export async function POST(req: NextRequest) {
         return r.value.slice(0, 5);
       };
 
+      // Recently confirmed "not found" for this name + area → answer instantly, spend nothing.
+      const nfKey = `rm:nf:${searchQuery.toLowerCase()}:${n.latitude},${n.longitude}`;
+      if (await cacheGet<boolean>(nfKey)) return json({ notFound: true, query: searchQuery, searchedNear });
+
+      // Stop trying fallbacks before Vercel's 60s function limit.
+      const hasTime = () => Date.now() - reqStart < 40_000;
+
       candidates = await search(searchQuery, 50);
 
-      // Retry 1: same name without punctuation / legal suffixes ("Griff's Services, LLC" → "griffs services"), wider radius.
-      const cleanQuery = searchQuery
-        .replace(/,?\s*\b(llc|l\.l\.c|inc|co|corp|ltd)\b\.?/gi, '')
-        .replace(/[^\w\s&]/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
-      if (candidates.length === 0 && cleanQuery && cleanQuery.toLowerCase() !== searchQuery.toLowerCase()) {
-        candidates = await search(cleanQuery, 100);
-      }
-      // Retry 2: name + town (helps service-area businesses registered outside the search radius).
-      if (candidates.length === 0) {
-        const town = searchedNear ? searchedNear.split(',')[0] : String(body.location || '');
-        candidates = await search(`${cleanQuery || searchQuery} ${town}`.trim(), 100);
-      }
-      // Retry 3: live Google Business Profile lookup by exact name. OpenSEO's search index misses
-      // newer/less-established listings; this checks Google directly (and costs less than a search).
-      if (candidates.length === 0) {
+      // Retry 1: live Google Business Profile lookup by exact name (cheapest; finds listings the index lacks).
+      if (candidates.length === 0 && hasTime()) {
         const key = `rm:profname:${searchQuery.toLowerCase()}:${n.latitude},${n.longitude}`;
         const r = await cached(key, () => getBusinessProfileByName(searchQuery, n), DAY, (v) => !!v);
         if (r.hit) cacheHits.push('lookup');
@@ -194,15 +187,15 @@ export async function POST(req: NextRequest) {
           await cacheSet(`rm:prof:${r.value.cid}`, r.value, DAY); // later keyword runs reuse it free
         }
       }
-      // Retry 4: an actual Google Maps search for the name near the location (title must match).
-      if (candidates.length === 0) {
+      // Retry 2: an actual Google Maps search for the name near the location (title must match).
+      if (candidates.length === 0 && hasTime()) {
         const key = `rm:mapsname:${searchQuery.toLowerCase()}:${n.latitude},${n.longitude}`;
         const r = await cached(key, () => findViaMapsSearch(searchQuery, n), DAY, (v) => !!v);
         if (r.hit) cacheHits.push('lookup');
         if (r.value) {
           // Prefer the full profile (categories, topics) when available; fall back to the Maps row.
           let full: Biz | null = null;
-          try { full = await profile(r.value.cid); } catch { full = null; }
+          if (hasTime()) { try { full = await profile(r.value.cid); } catch { full = null; } }
           const chosen = full && full.title !== 'Unknown business'
             ? { ...full, latitude: Number.isFinite(full.latitude) && full.latitude !== 0 ? full.latitude : r.value.latitude,
                 longitude: Number.isFinite(full.longitude) && full.longitude !== 0 ? full.longitude : r.value.longitude }
@@ -210,7 +203,17 @@ export async function POST(req: NextRequest) {
           candidates = [chosen];
         }
       }
+      // Retry 3: index search with punctuation / legal suffixes removed, wider radius.
+      const cleanQuery = searchQuery
+        .replace(/,?\s*\b(llc|l\.l\.c|inc|co|corp|ltd)\b\.?/gi, '')
+        .replace(/[^\w\s&]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (candidates.length === 0 && hasTime() && cleanQuery && cleanQuery.toLowerCase() !== searchQuery.toLowerCase()) {
+        candidates = await search(cleanQuery, 100);
+      }
 
+      if (candidates.length === 0) await cacheSet(nfKey, true, 60 * 60);
       biz = candidates[0] ?? null;
     }
 

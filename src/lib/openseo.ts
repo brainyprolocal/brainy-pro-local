@@ -81,15 +81,37 @@ async function handshake(): Promise<string | undefined> {
   return session;
 }
 
+/** Reuse one initialized MCP session per server instance for a few minutes (fewer round trips). */
+let sessionCache: { id: string | undefined; at: number } | null = null;
+const SESSION_TTL_MS = 4 * 60 * 1000;
+
+async function getSession(fresh = false): Promise<string | undefined> {
+  if (!fresh && sessionCache && Date.now() - sessionCache.at < SESSION_TTL_MS) return sessionCache.id;
+  const id = await handshake();
+  sessionCache = { id, at: Date.now() };
+  return id;
+}
+
+async function rawCall(name: string, args: Record<string, unknown>, session: string | undefined) {
+  const id = rpcId++;
+  const res = await post({ jsonrpc: '2.0', id, method: 'tools/call', params: { name, arguments: args } }, session);
+  return readRpc(res, id);
+}
+
 /** Calls an MCP tool and returns its structuredContent object. */
 export async function callTool<T = any>(name: string, args: Record<string, unknown>): Promise<T> {
-  const session = await handshake();
-  const id = rpcId++;
-  const res = await post(
-    { jsonrpc: '2.0', id, method: 'tools/call', params: { name, arguments: args } },
-    session,
-  );
-  const msg = await readRpc(res, id);
+  let msg: any;
+  try {
+    msg = await rawCall(name, args, await getSession());
+    // A JSON-RPC session error (expired/unknown session) → re-handshake once.
+    if (msg?.error && /session|initializ/i.test(String(msg.error.message))) {
+      msg = await rawCall(name, args, await getSession(true));
+    }
+  } catch (e: any) {
+    // HTTP 400/404 on a reused session usually means it expired server-side.
+    if (/HTTP (400|404)/.test(String(e?.message))) msg = await rawCall(name, args, await getSession(true));
+    else throw e;
+  }
   if (msg?.error) throw new Error(`OpenSEO ${name}: ${msg.error.message}`);
   const result = msg?.result;
   if (result?.isError) {
@@ -102,7 +124,7 @@ export async function callTool<T = any>(name: string, args: Record<string, unkno
 
 /** Lists the MCP tools OpenSEO exposes (name, description, input schema). Diagnostics only. */
 export async function listTools(): Promise<any[]> {
-  const session = await handshake();
+  const session = await getSession();
   const id = rpcId++;
   const res = await post({ jsonrpc: '2.0', id, method: 'tools/list', params: {} }, session);
   const msg = await readRpc(res, id);

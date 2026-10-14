@@ -75,7 +75,18 @@ export default function RankMapClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const j = await res.json();
+      const text = await res.text();
+      let j: any;
+      try {
+        j = JSON.parse(text);
+      } catch {
+        if (mine !== seq.current) return;
+        throw new Error(
+          res.status === 504 || /timed? ?out|FUNCTION_INVOCATION_TIMEOUT|An error occurred/i.test(text)
+            ? 'That lookup took too long. Please try again — anything already found is saved, so the retry is faster.'
+            : `Something went wrong on the server (${res.status}). Please try again.`,
+        );
+      }
       if (mine !== seq.current) return;
       if (!res.ok) throw new Error(j.error || `Request failed (${res.status})`);
       if (j.notFound) {
