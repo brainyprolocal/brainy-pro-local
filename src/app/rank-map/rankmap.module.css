@@ -19,7 +19,8 @@
 .eyebrow{display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;padding:5px 14px;background:rgba(37,99,235,0.12);border:1px solid rgba(59,130,246,0.3);border-radius:999px;font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#93c5fd}
 .radarDot{width:6px;height:6px;border-radius:50%;background:#60a5fa;box-shadow:0 0 8px #60a5fa}
 .h1{font-family:var(--font-outfit),sans-serif;font-size:42px;line-height:1.1;font-weight:700;margin:0 0 10px;letter-spacing:-0.025em;color:#f8fafc}
-.h1Highlight{font-style:normal;background:linear-gradient(135deg,#60a5fa 0%,#3b82f6 50%,#93c5fd 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.h1Highlight{font-style:normal;background:linear-gradient(110deg,#34d399 0%,#2dd4bf 24%,#38bdf8 50%,#818cf8 76%,#c084fc 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 2px 20px rgba(52,211,153,0.38));animation:shineGradient 7s linear infinite}
+@keyframes shineGradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 .sub{color:#94a3b8;margin:0 0 24px;font-size:15px;line-height:1.6}
 .card{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;box-shadow:0 20px 60px -30px rgba(0,0,0,.8)}
 .search{display:flex;gap:10px;flex-wrap:wrap}
