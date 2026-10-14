@@ -9,6 +9,7 @@ import {
 import { cached, cacheSet, kvBackend, DAY } from '@/lib/cache';
 import { deriveChips, getHistory, pushHistory, normalizeKeyword } from '@/lib/keywords';
 import { geocode, inConus } from '@/lib/geocode';
+import { looksLikeMapsLink, resolveMapsLink } from '@/lib/mapsLink';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -111,21 +112,33 @@ export async function POST(req: NextRequest) {
     let candidates: Biz[] = [];
     let searchedNear: string | undefined;
 
-    // Check if query is a direct Google CID or Google Maps URL with cid
+    // Exact lookups: a pasted Google Maps link, "cid=…", or a raw CID number.
+    let linkPin: Pt | null = null;
+    let linkCid = '';
+    if (!cidIn && looksLikeMapsLink(query)) {
+      const info = await resolveMapsLink(query);
+      if (!info.cid) {
+        return json({
+          error: "Couldn't read that Google Maps link. Open the business on Google Maps, tap Share → Copy link, and paste that link here.",
+        }, 400);
+      }
+      linkCid = info.cid;
+      if (Number.isFinite(info.latitude) && Number.isFinite(info.longitude)) {
+        linkPin = { latitude: info.latitude!, longitude: info.longitude! };
+      }
+    }
     const directCidMatch = query.match(/cid[=:](\d+)/i) || (query.match(/^\d{16,21}$/) ? [null, query] : null);
-    const effectiveCid = cidIn || directCidMatch?.[1] || '';
+    const effectiveCid = cidIn || linkCid || directCidMatch?.[1] || '';
 
     if (effectiveCid) {
       biz = await profile(effectiveCid);
       if (biz && (!Number.isFinite(biz.latitude) || biz.latitude === 0)) {
-        // For SABs without coordinates, use location from body if available
-        if (body.location) {
-          const g = await geocode(String(body.location));
-          if (g) {
-            biz.latitude = g.latitude;
-            biz.longitude = g.longitude;
-            biz.isServiceArea = true;
-          }
+        // No public pin (service-area business): use the link's pin, else the "Near" location.
+        const g = linkPin ?? (body.location ? await geocode(String(body.location)) : null);
+        if (g) {
+          biz.latitude = g.latitude;
+          biz.longitude = g.longitude;
+          biz.isServiceArea = true;
         }
       }
     } else {
@@ -141,20 +154,30 @@ export async function POST(req: NextRequest) {
       }
       if (!near) return json({ error: 'Enter an address, city, or ZIP to search near' }, 400);
       const n = { latitude: r4(near.latitude), longitude: r4(near.longitude), radiusKm: 50 };
-      const k = `rm:search:${query.toLowerCase()}:${n.latitude},${n.longitude},${n.radiusKm}`;
-      let s = await cached(k, () => searchLocalBusinesses(query, n), DAY, (v) => v.length > 0);
-      if (s.hit) cacheHits.push('lookup');
-      candidates = s.value.slice(0, 5);
 
-      // Fallback for SABs: try wider radius and location-assisted query if no candidates found
+      const search = async (q: string, radiusKm: number) => {
+        const nn = { ...n, radiusKm };
+        const key = `rm:search:${q.toLowerCase()}:${nn.latitude},${nn.longitude},${radiusKm}`;
+        const r = await cached(key, () => searchLocalBusinesses(q, nn), DAY, (v) => v.length > 0);
+        if (r.hit) cacheHits.push('lookup');
+        return r.value.slice(0, 5);
+      };
+
+      candidates = await search(query, 50);
+
+      // Retry 1: same name without punctuation / legal suffixes ("Griff's Services, LLC" → "griffs services"), wider radius.
+      const cleanQuery = query
+        .replace(/,?\s*\b(llc|l\.l\.c|inc|co|corp|ltd)\b\.?/gi, '')
+        .replace(/[^\w\s&]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (candidates.length === 0 && cleanQuery && cleanQuery.toLowerCase() !== query.toLowerCase()) {
+        candidates = await search(cleanQuery, 100);
+      }
+      // Retry 2: name + town (helps service-area businesses registered outside the search radius).
       if (candidates.length === 0) {
-        const cleanQuery = query.replace(/,?\s*(llc|inc|co|corp|ltd)\.?$/i, '').trim();
-        const fallbackQuery = `${cleanQuery} ${searchedNear ? searchedNear.split(',')[0] : (body.location || '')}`.trim();
-        const fallbackN = { latitude: n.latitude, longitude: n.longitude, radiusKm: 100 };
-        const fallbackKey = `rm:search:${fallbackQuery.toLowerCase()}:${fallbackN.latitude},${fallbackN.longitude},100`;
-        const fallbackS = await cached(fallbackKey, () => searchLocalBusinesses(fallbackQuery, fallbackN), DAY, (v) => v.length > 0);
-        if (fallbackS.hit) cacheHits.push('lookup-fallback');
-        candidates = fallbackS.value.slice(0, 5);
+        const town = searchedNear ? searchedNear.split(',')[0] : String(body.location || '');
+        candidates = await search(`${cleanQuery || query} ${town}`.trim(), 100);
       }
 
       biz = candidates[0] ?? null;

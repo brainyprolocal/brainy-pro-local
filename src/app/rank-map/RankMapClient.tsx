@@ -200,7 +200,7 @@ export default function RankMapClient() {
         <div className={`${s.card} ${s.noPrint}`}>
           <form className={s.search} onSubmit={resolve}>
             <input className={s.input} value={query} onChange={(e) => setQuery(e.target.value)}
-              placeholder='Any local business — e.g. "Fish Window Cleaning"' />
+              placeholder='Business name — or paste its Google Maps link' />
             <input className={s.input} style={{ maxWidth: 300 }} list="rm-quick" value={location}
               onChange={(e) => setLocation(e.target.value)} placeholder="Near: address, city, or ZIP" />
             <datalist id="rm-quick">{QUICK.map((q) => <option key={q} value={q} />)}</datalist>
@@ -272,6 +272,9 @@ export default function RankMapClient() {
         {notFound && (
           <div className={s.notice}>
             We couldn&apos;t find that business on Google — try the exact name, or confirm it has a Google Business Profile.
+            <div style={{ marginTop: 8 }}>
+              <b>Sure it&apos;s listed?</b> Open the business on Google Maps, tap <b>Share → Copy link</b>, and paste that link into the business box. That finds the exact listing every time.
+            </div>
             <div className={s.muted} style={{ marginTop: 6 }}>Searched “{notFound.q}”{notFound.near ? ` near ${notFound.near}` : ''}.</div>
           </div>
         )}
