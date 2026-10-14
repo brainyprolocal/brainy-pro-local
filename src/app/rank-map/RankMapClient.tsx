@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import s from './rankmap.module.css';
 
@@ -127,17 +128,45 @@ export default function RankMapClient() {
   return (
     <div className={s.root}>
       <div className={s.wrap}>
-        <div className={`${s.top} ${s.noPrint}`}>
-          <div className={s.brand}><b>brainy pro</b> · Local Rank Map</div>
-          <div className={s.private}>Private · internal only</div>
-        </div>
+        <header className={`${s.top} ${s.noPrint}`}>
+          <div className={s.brandGroup}>
+            <Link href="/" className={s.logoLink} title="brainy pro local home">
+              <div className={s.logoBox}>
+                <img src="/brand/logo-icon-blue.svg" alt="brainy pro logo icon" className={s.logoImg} />
+              </div>
+              <span className={s.brandText}>brainy pro</span>
+            </Link>
+            <span className={s.brandDivider}>/</span>
+            <span className={s.toolTag}>Local Rank Map</span>
+          </div>
 
-        <h1 className={s.h1}>Where does <em>{biz?.title || 'your business'}</em> actually show up?</h1>
-        <p className={s.sub}>
-          {ready
-            ? <>Google Maps pack for “{data.keyword}” · mobile · {size}×{size} grid @ {data.spacingKm} km · centered on {data.center.label}</>
-            : 'Street-by-street Google Maps pack rankings around the storefront.'}
-        </p>
+          <div className={s.topRight}>
+            <Link href="/" className={s.siteLink}>
+              <span>Main Website</span>
+              <span style={{ fontSize: 11 }}>↗</span>
+            </Link>
+            <div className={s.privateBadge}>
+              <span className={s.beacon} />
+              <span>Agency Internal</span>
+            </div>
+          </div>
+        </header>
+
+        <div className={s.heroSection}>
+          <div className={`${s.eyebrow} ${s.noPrint}`}>
+            <span className={s.radarDot} />
+            <span>Local SEO Intelligence & Visibility Map</span>
+          </div>
+
+          <h1 className={s.h1}>
+            Where does <span className={s.h1Highlight}>{biz?.title || 'your business'}</span> actually show up?
+          </h1>
+          <p className={s.sub}>
+            {ready
+              ? <>Google Maps 3-Pack rankings for “<strong style={{ color: '#fff' }}>{data.keyword}</strong>” · mobile · {size}×{size} grid @ {data.spacingKm} km · centered on {data.center.label}</>
+              : 'Street-by-street Google Maps pack rankings around the storefront.'}
+          </p>
+        </div>
 
         <div className={`${s.card} ${s.noPrint}`}>
           <form className={s.search} onSubmit={resolve}>
