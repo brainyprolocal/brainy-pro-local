@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * Private rank-map tool: HTTP Basic Auth + noindex on /rank-map and /api/rank-map.
- * Fails closed (401) if credentials are not configured. Public site is untouched.
+ * Private portal: HTTP Basic Auth + noindex on /hub/private (and everything under it,
+ * e.g. the rank map) plus /api/rank-map. Fails closed (401) if credentials are not
+ * configured. Public site and the public /hub dashboard are untouched.
  */
 export const config = {
-  matcher: ['/rank-map', '/rank-map/:path*', '/api/rank-map/:path*'],
+  matcher: ['/hub/private', '/hub/private/:path*', '/api/rank-map/:path*'],
 };
 
 function unauthorized() {
