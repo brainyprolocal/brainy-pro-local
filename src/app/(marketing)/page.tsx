@@ -370,7 +370,7 @@ export default function HomePage() {
         <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/3 w-96 h-96 bg-trust-navy/20 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <img src="/brand/Brainy Pro Text White.svg" alt="brainy pro" className="h-10 sm:h-12 mx-auto mb-4" />
+          <img src="/brand/logo-text-white.svg" alt="brainy pro" className="h-10 sm:h-12 mx-auto mb-4" />
           <h2 className="text-3xl md:text-5xl font-outfit font-bold text-clean-white mb-6">
             Ready to See What Fits Your Business?
           </h2>

@@ -9,11 +9,6 @@ const nextConfig: NextConfig = {
   // Enable React strict mode for better development practices
   reactStrictMode: true,
 
-  // Force Vercel to skip strict type checking during builds
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-
   // Image optimization configuration
   images: {
     // Vercel handles image optimization automatically

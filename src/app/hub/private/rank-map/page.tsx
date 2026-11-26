@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import HideSiteChrome from '@/components/businessandbrews/HideSiteChrome';
 import RankMapClient from './RankMapClient';
 
 export const metadata: Metadata = {
@@ -9,10 +8,5 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default function RankMapPage() {
-  return (
-    <>
-      <HideSiteChrome />
-      <RankMapClient />
-    </>
-  );
+  return <RankMapClient />;
 }

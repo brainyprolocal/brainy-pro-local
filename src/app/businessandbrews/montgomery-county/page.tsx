@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     images: [
       {
-        url: '/businessandbrews/og-image.jpg',
+        url: '/businessandbrews/hero-bg.jpg',
         width: 1200,
         height: 630,
         alt: 'brainy pro — Business & Brews Montgomery County',
