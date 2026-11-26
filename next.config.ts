@@ -41,6 +41,17 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // GHL white-label assets (CSS/JS loaded cross-origin by GoHighLevel)
+        source: "/ghl/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=300, s-maxage=300, must-revalidate",
+          },
+        ],
+      },
+      {
         source: "/(.*)",
         headers: [
           {

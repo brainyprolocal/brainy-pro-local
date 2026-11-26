@@ -1,0 +1,119 @@
+/* brAIny pro — GHL white-label theme
+ * Load via GHL Agency Settings → Company → Custom CSS.
+ * Palette: Trust Navy #0F172A, Connection Blue #1D4781, Action Accent #2563EB.
+ * Fonts: Inter (body), Montserrat (headings).
+ * NOTE: Selectors are intentionally scoped to app chrome (sidebar/header/login)
+ * and avoid page/funnel/email builder canvases. GHL's DOM changes occasionally;
+ * adjust selectors here if something stops matching.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap");
+
+:root {
+  --bp-navy: #0f172a;
+  --bp-blue: #1d4781;
+  --bp-accent: #2563eb;
+  --bp-white: #ffffff;
+  --bp-font-body: "Inter", system-ui, sans-serif;
+  --bp-font-head: "Montserrat", "Inter", sans-serif;
+}
+
+/* ── Typography (app chrome only) ── */
+body,
+#app {
+  font-family: var(--bp-font-body);
+}
+#app h1,
+#app h2,
+#app h3 {
+  font-family: var(--bp-font-head);
+}
+
+/* ── Sidebar ── */
+#sidebar-v2,
+#sidebar-v2 .sidebar-v2-location,
+.sidebar-v2-location {
+  background: linear-gradient(180deg, var(--bp-navy) 0%, var(--bp-blue) 100%) !important;
+}
+#sidebar-v2 .sidebar-v2-location a,
+#sidebar-v2 .sidebar-v2-location a span,
+#sidebar-v2 .sidebar-v2-location .nav-title {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+#sidebar-v2 .sidebar-v2-location a:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+#sidebar-v2 .sidebar-v2-location a.router-link-active,
+#sidebar-v2 .sidebar-v2-location a.active {
+  background: rgba(37, 99, 235, 0.25) !important;
+  border-left: 3px solid var(--bp-accent);
+  color: var(--bp-white) !important;
+}
+
+/* ── Top header ── */
+.hl_header,
+header.hl_header {
+  background: var(--bp-white) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* ── Primary buttons & accents ── */
+.hl-btn-primary,
+.n-button--primary-type,
+button.btn-primary,
+.btn.btn-primary {
+  background-color: var(--bp-accent) !important;
+  border-color: var(--bp-accent) !important;
+  color: var(--bp-white) !important;
+  border-radius: 8px !important;
+}
+.hl-btn-primary:hover,
+.n-button--primary-type:hover,
+button.btn-primary:hover,
+.btn.btn-primary:hover {
+  background-color: var(--bp-blue) !important;
+  border-color: var(--bp-blue) !important;
+}
+a {
+  color: var(--bp-accent);
+}
+input:focus,
+textarea:focus,
+select:focus,
+.n-input--focus {
+  border-color: var(--bp-accent) !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* ── Login / auth screens ── */
+body.login-page,
+.hl_login,
+.hl_login--body {
+  background: linear-gradient(135deg, var(--bp-navy) 0%, var(--bp-blue) 100%) !important;
+}
+.hl_login .hl_login--body,
+.hl_login--body .card,
+.hl_login--body form {
+  border-radius: 12px;
+}
+.hl_login .hl_login--header h1,
+.hl_login .hl_login--header h2,
+.hl_login .hl_login--header p {
+  color: var(--bp-white) !important;
+  font-family: var(--bp-font-head);
+}
+
+/* ── Scrollbars ── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bp-blue);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bp-accent);
+}
