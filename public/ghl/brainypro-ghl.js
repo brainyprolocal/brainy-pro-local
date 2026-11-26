@@ -9,7 +9,7 @@
 
   var CONFIG = {
     tabTitle: "brAIny pro", // set to "" to leave GHL's title alone
-    faviconUrl: "https://brainyprolocal.com/favicon.ico", // "" to skip
+    faviconUrl: "https://brainyprolocal.com/icon.png", // "" to skip
     hideSelectors: [
       // Add selectors to hide, e.g. ".some-ghl-promo-banner"
     ],
